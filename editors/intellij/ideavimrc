@@ -8,6 +8,15 @@ set ignorecase
 set smartcase
 set incsearch
 set hlsearch
+set scrolloff=5
+set visualbell
+set noerrorbells
+set history=1000
+set ideajoin
+
+" gcc → comment/uncomment current line
+" gc in visual mode → comment selection
+set commentary
 
 " =========================
 " LEADER KEY
@@ -53,4 +62,8 @@ nnoremap <leader>f :action ReformatCode<CR>
 " Open file search
 nnoremap <leader>p :action SearchEverywhere<CR>
 
+" Clear search highlighting
 nnoremap <leader>h :noh<CR>
+
+" Open Terminal
+nmap <Leader>t :action ActivateTerminalToolWindow<CR>
