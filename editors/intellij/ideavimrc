@@ -1,0 +1,56 @@
+" =========================
+" BASIC VIM BEHAVIOR
+" =========================
+
+set number          " show line numbers
+set relativenumber  " relative line numbers (great for motions)
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+
+" =========================
+" LEADER KEY
+" =========================
+
+let mapleader=" "
+
+" =========================
+" BETTER ESCAPE (great habit)
+" =========================
+
+inoremap jj <Esc>
+
+" =========================
+" CLIPBOARD INTEGRATION
+" =========================
+
+set clipboard+=unnamedplus
+
+" =========================
+" USEFUL KEYMAPS
+" =========================
+
+" Save file
+nnoremap <leader>w :w<CR>
+
+" Quit
+nnoremap <leader>q :q<CR>
+
+" IntelliJ actions (IdeaVim magic)
+" Go to definition
+nnoremap gd :action GotoDeclaration<CR>
+
+" Find usages
+nnoremap gr :action FindUsages<CR>
+
+" Rename symbol (refactor)
+nnoremap <leader>r :action RenameElement<CR>
+
+" Format code
+nnoremap <leader>f :action ReformatCode<CR>
+
+" Open file search
+nnoremap <leader>p :action SearchEverywhere<CR>
+
+nnoremap <leader>h :noh<CR>
