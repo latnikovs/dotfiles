@@ -67,3 +67,9 @@ nnoremap <leader>h :noh<CR>
 
 " Open Terminal
 nmap <Leader>t :action ActivateTerminalToolWindow<CR>
+
+" Open Git Branches popup
+nnoremap <leader>gb :action Git.Branches<CR>
+
+" Reload .ideavimrc without restarting IDE"
+nnoremap <leader>vr :source ~/.ideavimrc<CR>
