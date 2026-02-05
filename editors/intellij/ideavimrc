@@ -73,3 +73,13 @@ nnoremap <leader>gb :action Git.Branches<CR>
 
 " Reload .ideavimrc without restarting IDE"
 nnoremap <leader>vr :source ~/.ideavimrc<CR>
+
+" Unmap arrow keys to encourage hjkl usage
+nnoremap <Up> <Nop>
+nnoremap <Down> <Nop>
+nnoremap <Left> <Nop>
+nnoremap <Right> <Nop>
+vnoremap <Up> <Nop>
+vnoremap <Down> <Nop>
+vnoremap <Left> <Nop>
+vnoremap <Right> <Nop>
