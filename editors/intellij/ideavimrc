@@ -62,9 +62,6 @@ nnoremap <leader>f :action ReformatCode<CR>
 " Open file search
 nnoremap <leader>p :action SearchEverywhere<CR>
 
-" Clear search highlighting
-nnoremap <leader>h :noh<CR>
-
 " Open Terminal
 nmap <Leader>t :action ActivateTerminalToolWindow<CR>
 
@@ -83,3 +80,13 @@ vnoremap <Up> <Nop>
 vnoremap <Down> <Nop>
 vnoremap <Left> <Nop>
 vnoremap <Right> <Nop>
+
+" Center screen after certain motions
+nnoremap <C-u> <C-u>zz
+nnoremap <C-d> <C-d>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" Esc to clear search
+nnoremap <Esc> :nohlsearch<CR>
+
