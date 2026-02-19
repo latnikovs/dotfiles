@@ -3,6 +3,7 @@ Opinionated dotfiles for a macOS/Linux dev setup.
 
 Currently supported:
 - IntelliJ IdeaVim (`~/.ideavimrc`)
+- Neovim (`~/.config/nvim`)
 - tmux (`~/.tmux.conf`)
 
 ## Install
@@ -12,4 +13,5 @@ Currently supported:
 
 The installer creates symlinks for:
 - `~/.ideavimrc` -> `editors/intellij/ideavimrc`
+- `~/.config/nvim` -> `editors/nvim`
 - `~/.tmux.conf` -> `terminal/tmux/tmux.conf`

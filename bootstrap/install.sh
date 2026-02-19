@@ -8,10 +8,12 @@ link_dotfile() {
   local dest="$2"
   local label="$3"
 
-  if [ ! -f "$src" ]; then
+  if [ ! -e "$src" ]; then
     echo "Error: $label not found at $src"
     exit 1
   fi
+
+  mkdir -p "$(dirname "$dest")"
 
   if [ -e "$dest" ] && [ ! -L "$dest" ]; then
     echo "Backing up existing $dest to $dest.bak"
@@ -29,4 +31,5 @@ link_dotfile() {
 }
 
 link_dotfile "$ROOT_DIR/editors/intellij/ideavimrc" "$HOME/.ideavimrc" "ideavimrc"
+link_dotfile "$ROOT_DIR/editors/nvim" "$HOME/.config/nvim" "nvim"
 link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
