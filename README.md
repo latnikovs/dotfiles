@@ -22,6 +22,32 @@ The installer creates these symlinks:
 
 If a target already exists and is not a symlink, it is moved to a `.bak` file before linking.
 
+## tmux plugins (TPM, Resurrect, Continuum)
+
+The tmux config includes:
+
+- `tmux-plugins/tpm`
+- `tmux-plugins/tmux-resurrect`
+- `tmux-plugins/tmux-continuum`
+
+Install TPM once:
+
+```bash
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+Then start tmux and install plugins:
+
+- Reload config: `Prefix + r`
+- Install plugins from `.tmux.conf`: `Prefix + I`
+
+Useful keys for session persistence:
+
+- Save session manually: `Prefix + Ctrl-s`
+- Restore session manually: `Prefix + Ctrl-r`
+
+`tmux-continuum` is set to auto-save every 5 minutes and auto-restore on tmux start.
+
 ## Neovim setup
 
 ### Prerequisites
