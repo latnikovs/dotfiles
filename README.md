@@ -1,36 +1,45 @@
 # dotfiles
-Opinionated dotfiles for a macOS/Linux dev setup.
 
-Currently supported:
-- IntelliJ IdeaVim (`~/.ideavimrc`)
-- Neovim (`~/.config/nvim`)
-- tmux (`~/.tmux.conf`)
+Personal dotfiles for a macOS/Linux development environment.
 
-## Install
+## What is managed
+
+- IntelliJ IdeaVim: `~/.ideavimrc`
+- Neovim: `~/.config/nvim`
+- tmux: `~/.tmux.conf`
+
+## Installation
+
 ```bash
 ./bootstrap/install.sh
 ```
 
-The installer creates symlinks for:
+The installer creates these symlinks:
+
 - `~/.ideavimrc` -> `editors/intellij/ideavimrc`
 - `~/.config/nvim` -> `editors/nvim`
 - `~/.tmux.conf` -> `terminal/tmux/tmux.conf`
 
-## Neovim bootstrap (macOS)
+If a target already exists and is not a symlink, it is moved to a `.bak` file before linking.
 
-After linking `~/.config/nvim`, install required tools:
+## Neovim setup
+
+### Prerequisites
 
 - `git`
 - `neovim`
 - `ripgrep`
 - `fd`
+- `node` (for npm-based LSP/formatter tools)
 - `go`
-- `node`
 - `python3`
 - `java` (JDK 21+)
+- C build toolchain (`xcode-select --install` on macOS)
+
+### Bootstrap plugins and tools
 
 ```bash
-brew install neovim ripgrep fd && \
+brew install neovim ripgrep fd node && \
 nvim --headless "+Lazy! sync" "+qa" && \
 nvim --headless "+Lazy load nvim-lspconfig nvim-treesitter.nvim" "+MasonToolsInstallSync" "+TSUpdateSync" "+qa"
 ```
@@ -41,4 +50,7 @@ Optional manual flow:
 nvim
 ```
 
-Then run `:Mason` and `:checkhealth` inside Neovim.
+Then run:
+
+- `:Mason`
+- `:checkhealth`
