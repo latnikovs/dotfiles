@@ -2,24 +2,31 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC="$ROOT_DIR/editors/intellij/ideavimrc"
-DEST="$HOME/.ideavimrc"
 
-if [ ! -f "$SRC" ]; then
-  echo "Error: ideavimrc not found at $SRC"
-  exit 1
-fi
+link_dotfile() {
+  local src="$1"
+  local dest="$2"
+  local label="$3"
 
-if [ -e "$DEST" ] && [ ! -L "$DEST" ]; then
-  echo "Backing up existing ~/.ideavimrc to ~/.ideavimrc.bak"
-  mv "$DEST" "$DEST.bak"
-fi
+  if [ ! -f "$src" ]; then
+    echo "Error: $label not found at $src"
+    exit 1
+  fi
 
-if [ -L "$DEST" ]; then
-  echo "~/.ideavimrc already linked"
-  exit 0
-fi
+  if [ -e "$dest" ] && [ ! -L "$dest" ]; then
+    echo "Backing up existing $dest to $dest.bak"
+    mv "$dest" "$dest.bak"
+  fi
 
-ln -s "$SRC" "$DEST"
-echo "Symlink created:"
-echo "  ~/.ideavimrc → $SRC"
+  if [ -L "$dest" ]; then
+    echo "$dest already linked"
+    return
+  fi
+
+  ln -s "$src" "$dest"
+  echo "Symlink created:"
+  echo "  $dest -> $src"
+}
+
+link_dotfile "$ROOT_DIR/editors/intellij/ideavimrc" "$HOME/.ideavimrc" "ideavimrc"
+link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
