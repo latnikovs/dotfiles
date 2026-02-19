@@ -69,7 +69,7 @@ nmap <Leader>t :action ActivateTerminalToolWindow<CR>
 nnoremap <leader>gb :action Git.Branches<CR>
 
 " Reload .ideavimrc without restarting IDE"
-nnoremap <leader>vr :source ~/.ideavimrc<CR>
+nnoremap <leader>vr :silent source ~/.ideavimrc \| echo "IdeaVim config reloaded"<CR>
 
 " Unmap arrow keys to encourage hjkl usage
 nnoremap <Up> <Nop>
@@ -90,3 +90,20 @@ nnoremap N Nzzzv
 " Esc to clear search
 nnoremap <Esc> :nohlsearch<CR>
 
+" Yank to system clipboard
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+
+" Paste from system clipboard
+nnoremap <leader>p "+p
+vnoremap <leader>p "+p
+
+" Delete without overwriting registers
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+
+" Make Y consistent
+nnoremap Y y$
+
+" Visual paste without losing clipboard
+vnoremap <leader>P "_dP
