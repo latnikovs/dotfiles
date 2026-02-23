@@ -22,6 +22,30 @@ The installer creates these symlinks:
 
 If a target already exists and is not a symlink, it is moved to a `.bak` file before linking.
 
+## Nerd Font (required)
+
+This setup expects a Nerd Font for terminal icons (Neovim and tmux statusline).
+
+Install JetBrainsMono Nerd Font:
+
+macOS:
+
+```bash
+brew tap homebrew/cask-fonts
+brew install --cask font-jetbrains-mono-nerd-font
+```
+
+Linux:
+
+```bash
+mkdir -p ~/.local/share/fonts/JetBrainsMonoNerdFont && \
+curl -fLo /tmp/JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
+unzip -o /tmp/JetBrainsMono.zip -d ~/.local/share/fonts/JetBrainsMonoNerdFont && \
+fc-cache -fv
+```
+
+After install, set your terminal font to `JetBrainsMono Nerd Font Mono`.
+
 ## tmux plugins (TPM, Resurrect, Continuum)
 
 The tmux config includes:
@@ -67,7 +91,7 @@ Useful keys for session persistence:
 ```bash
 brew install neovim ripgrep fd node && \
 nvim --headless "+Lazy! sync" "+qa" && \
-nvim --headless "+Lazy load nvim-lspconfig nvim-treesitter.nvim" "+MasonToolsInstallSync" "+TSUpdateSync" "+qa"
+nvim --headless "+Lazy load mason-tool-installer.nvim" "+MasonToolsInstallSync" "+qa"
 ```
 
 Optional manual flow:
