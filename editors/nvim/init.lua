@@ -275,6 +275,7 @@ require("lazy").setup({
 							".gitignore",
 							".envrc",
 							".aiignore",
+							".env",
 						},
 						never_show = {
 							".DS_Store",
@@ -653,6 +654,17 @@ require("lazy").setup({
 						"--jvm-arg=-javaagent:" .. vim.fn.stdpath("data") .. "/mason/packages/jdtls/lombok.jar",
 						"--jvm-arg=-Xbootclasspath/a:" .. vim.fn.stdpath("data") .. "/mason/packages/jdtls/lombok.jar",
 					},
+					settings = {
+						java = {
+							format = {
+								settings = {
+									-- Use Google Java Style
+									url = "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+									profile = "GoogleStyle",
+								},
+							},
+						},
+					},
 				},
 				angularls = {},
 				html = {},
@@ -691,6 +703,7 @@ require("lazy").setup({
 				"goimports",
 				"prettierd",
 				"prettier",
+				"google-java-format", -- Java formatter following Google's style guide
 				-- You can add other tools here that you want Mason to install
 			}
 
@@ -744,14 +757,14 @@ require("lazy").setup({
 			{
 				"<leader>f",
 				function()
-					require("conform").format({ async = true, lsp_format = "fallback" })
+					require("conform").format({ async = true, lsp_format = "fallback", timeout_ms = 3000 })
 				end,
 				mode = "",
 				desc = "[F]ormat buffer",
 			},
 		},
 		opts = {
-			notify_on_error = false,
+			notify_on_error = true,
 			format_on_save = function(bufnr)
 				-- Disable "format_on_save lsp_fallback" for languages that don't
 				-- have a well standardized coding style. You can add additional
@@ -770,7 +783,7 @@ require("lazy").setup({
 				css = { "prettierd", "prettier", stop_after_first = true },
 				go = { "goimports", "gofumpt" },
 				html = { "prettierd", "prettier", stop_after_first = true },
-				java = { "google-java-format" },
+				-- Java formatting uses jdtls LSP with Google Style (configured in LSP settings)
 				javascript = { "prettierd", "prettier", stop_after_first = true },
 				javascriptreact = { "prettierd", "prettier", stop_after_first = true },
 				lua = { "stylua" },
