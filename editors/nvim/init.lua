@@ -961,6 +961,7 @@ require("lazy").setup({
 
 	{ -- Highlight, edit, and navigate code
 		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
 		config = function()
 			local parsers = {
 				"bash",
@@ -980,7 +981,6 @@ require("lazy").setup({
 				"vim",
 				"vimdoc",
 			}
-			require("nvim-treesitter").install(parsers)
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = "*",
 				callback = function(args)

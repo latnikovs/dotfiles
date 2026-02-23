@@ -31,7 +31,6 @@ Install JetBrainsMono Nerd Font:
 macOS:
 
 ```bash
-brew tap homebrew/cask-fonts
 brew install --cask font-jetbrains-mono-nerd-font
 ```
 

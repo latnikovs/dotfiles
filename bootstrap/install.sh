@@ -40,8 +40,10 @@ link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 
 if has_cmd nvim; then
   echo "Bootstrapping Neovim plugins and Mason tools..."
+  TS_PARSERS=(bash css diff go html java javascript lua luadoc markdown markdown_inline query tsx typescript vim vimdoc)
   nvim --headless "+Lazy! sync" "+qa"
   nvim --headless "+Lazy load mason-tool-installer.nvim" "+MasonToolsInstallSync" "+qa"
+  nvim --headless "+Lazy load nvim-treesitter" "+TSInstallSync ${TS_PARSERS[*]}" "+qa"
 else
   echo "Skipping Neovim bootstrap: 'nvim' is not installed"
 fi
