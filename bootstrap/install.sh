@@ -7,6 +7,64 @@ has_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
+install_macos_deps() {
+  if [ "$(uname -s)" != "Darwin" ]; then
+    return
+  fi
+
+  if ! has_cmd brew; then
+    echo "Homebrew not found. Skipping package install."
+    echo "Install Homebrew from https://brew.sh, then re-run bootstrap."
+    return
+  fi
+
+  local packages=(neovim ripgrep fd node tmux)
+  local missing=()
+  local pkg
+
+  for pkg in "${packages[@]}"; do
+    if ! brew list "$pkg" >/dev/null 2>&1; then
+      missing+=("$pkg")
+    fi
+  done
+
+  if [ "${#missing[@]}" -gt 0 ]; then
+    echo "Installing missing Homebrew packages: ${missing[*]}"
+    brew install "${missing[@]}"
+  else
+    echo "Homebrew packages already installed: ${packages[*]}"
+  fi
+
+  if ! brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1; then
+    echo "Installing Nerd Font cask: font-jetbrains-mono-nerd-font"
+    brew install --cask font-jetbrains-mono-nerd-font
+  else
+    echo "Nerd Font already installed: font-jetbrains-mono-nerd-font"
+  fi
+
+  if ! xcode-select -p >/dev/null 2>&1; then
+    echo "Xcode Command Line Tools are required for some builds."
+    echo "Run: xcode-select --install"
+  fi
+}
+
+install_tpm() {
+  local tpm_dir="$HOME/.tmux/plugins/tpm"
+
+  if [ -d "$tpm_dir" ]; then
+    echo "TPM already installed: $tpm_dir"
+    return
+  fi
+
+  if ! has_cmd git; then
+    echo "Skipping TPM install: 'git' is not installed"
+    return
+  fi
+
+  echo "Installing TPM to $tpm_dir"
+  git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
+}
+
 link_dotfile() {
   local src="$1"
   local dest="$2"
@@ -38,6 +96,9 @@ link_dotfile "$ROOT_DIR/editors/intellij/ideavimrc" "$HOME/.ideavimrc" "ideavimr
 link_dotfile "$ROOT_DIR/editors/nvim" "$HOME/.config/nvim" "nvim"
 link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 
+install_macos_deps
+install_tpm
+
 if has_cmd nvim; then
   echo "Bootstrapping Neovim plugins and Mason tools..."
   TS_PARSERS=(bash css diff go html java javascript lua luadoc markdown markdown_inline query tsx typescript vim vimdoc)
@@ -48,4 +109,6 @@ else
   echo "Skipping Neovim bootstrap: 'nvim' is not installed"
 fi
 
-echo "If icons look wrong, install and select 'JetBrainsMono Nerd Font Mono' in your terminal."
+echo ""
+echo ""
+echo "⚠ If icons look wrong, install and select 'JetBrainsMono Nerd Font Mono' in your terminal."
