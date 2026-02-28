@@ -105,6 +105,7 @@ vim.filetype.add({
 --  See `:help hlsearch`
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("i", "jj", "<Esc>")
+vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "[W]rite file" })
 
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
@@ -192,6 +193,18 @@ end
 ---@type vim.Option
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
+
+local function format_with_java_import_cleanup()
+	local bufnr = vim.api.nvim_get_current_buf()
+	if vim.bo[bufnr].filetype == "java" then
+		vim.lsp.buf.code_action({
+			context = { only = { "source.organizeImports" } },
+			apply = true,
+		})
+	end
+
+	require("conform").format({ async = true, lsp_format = "fallback", timeout_ms = 3000 })
+end
 
 -- [[ Configure and install plugins ]]
 --
@@ -315,7 +328,7 @@ require("lazy").setup({
 		event = "VimEnter",
 		opts = {
 			-- delay between pressing a key and opening which-key (milliseconds)
-			delay = 300,
+			delay = 150,
 			icons = { mappings = vim.g.have_nerd_font },
 
 			-- Document existing key chains
@@ -652,7 +665,6 @@ require("lazy").setup({
 					cmd = {
 						"jdtls",
 						"--jvm-arg=-javaagent:" .. vim.fn.stdpath("data") .. "/mason/packages/jdtls/lombok.jar",
-						"--jvm-arg=-Xbootclasspath/a:" .. vim.fn.stdpath("data") .. "/mason/packages/jdtls/lombok.jar",
 					},
 					settings = {
 						java = {
@@ -756,9 +768,7 @@ require("lazy").setup({
 		keys = {
 			{
 				"<leader>f",
-				function()
-					require("conform").format({ async = true, lsp_format = "fallback", timeout_ms = 3000 })
-				end,
+				format_with_java_import_cleanup,
 				mode = "",
 				desc = "[F]ormat buffer",
 			},
