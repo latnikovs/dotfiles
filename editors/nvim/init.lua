@@ -123,7 +123,7 @@ vim.diagnostic.config({
 	jump = { float = true },
 })
 
-vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q] location list" })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -197,13 +197,63 @@ rtp:prepend(lazypath)
 local function format_with_java_import_cleanup()
 	local bufnr = vim.api.nvim_get_current_buf()
 	if vim.bo[bufnr].filetype == "java" then
-		vim.lsp.buf.code_action({
-			context = { only = { "source.organizeImports" } },
-			apply = true,
-		})
+		local params = vim.lsp.util.make_given_range_params({ 0, 0 }, { vim.api.nvim_buf_line_count(bufnr), 0 }, bufnr)
+		params.context = {
+			only = { "source.organizeImports", "source.organizeImports.java" },
+			diagnostics = vim.diagnostic.get(bufnr),
+		}
+
+		local applied = false
+		local responses = vim.lsp.buf_request_sync(bufnr, "textDocument/codeAction", params, 3000) or {}
+		for client_id, response in pairs(responses) do
+			for _, action in ipairs(response.result or {}) do
+				local client = vim.lsp.get_client_by_id(client_id)
+				if
+					client
+					and action.data
+					and not action.edit
+					and not action.command
+					and client:supports_method("codeAction/resolve", bufnr)
+				then
+					local resolved = client:request_sync("codeAction/resolve", action, 3000, bufnr)
+					action = (resolved and resolved.result) or action
+				end
+
+				if action.edit then
+					vim.lsp.util.apply_workspace_edit(action.edit, client and client.offset_encoding or "utf-16")
+					applied = true
+				end
+				if action.command then
+					local command = type(action.command) == "table" and action.command.command or action.command
+					local arguments = type(action.command) == "table" and action.command.arguments or nil
+					if client and command then
+						client:request_sync("workspace/executeCommand", { command = command, arguments = arguments }, 3000, bufnr)
+					end
+					applied = true
+				end
+				break
+			end
+		end
+
+		if not applied then
+			local uri = vim.uri_from_bufnr(bufnr)
+			for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr, name = "jdtls" })) do
+				local attempts = {
+					{ command = "java.edit.organizeImports", arguments = { uri } },
+					{ command = "java.edit.organizeImports", arguments = { { uri = uri } } },
+					{ command = "java.edit.organizeImports" },
+				}
+				for _, payload in ipairs(attempts) do
+					local ok = client:request_sync("workspace/executeCommand", payload, 3000, bufnr)
+					if ok and not ok.err then
+						break
+					end
+				end
+			end
+		end
 	end
 
-	require("conform").format({ async = true, lsp_format = "fallback", timeout_ms = 3000 })
+	require("conform").format({ bufnr = bufnr, async = false, lsp_format = "fallback", timeout_ms = 3000 })
 end
 
 -- [[ Configure and install plugins ]]
@@ -1057,6 +1107,8 @@ require("lazy").setup({
 				"vim",
 				"vimdoc",
 			}
+			require("nvim-treesitter").install(parsers)
+
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = "*",
 				callback = function(args)
@@ -1079,7 +1131,6 @@ require("lazy").setup({
 	-- require 'kickstart.plugins.indent_line',
 	-- require 'kickstart.plugins.lint',
 	-- require 'kickstart.plugins.autopairs',
-	require("kickstart.plugins.neo-tree"),
 	-- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
 	{
