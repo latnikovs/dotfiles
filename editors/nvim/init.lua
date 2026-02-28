@@ -965,6 +965,15 @@ require("lazy").setup({
 			end
 
 			---@diagnostic disable-next-line: duplicate-set-field
+			statusline.section_filename = function()
+				if vim.bo.buftype == "terminal" then
+					return "%t"
+				end
+
+				return "%f%m%r"
+			end
+
+			---@diagnostic disable-next-line: duplicate-set-field
 			statusline.section_git = function(args)
 				if statusline.is_truncated(args.trunc_width) then
 					return ""
@@ -981,6 +990,34 @@ require("lazy").setup({
 			---@diagnostic disable-next-line: duplicate-set-field
 			statusline.section_diff = function()
 				return ""
+			end
+
+			---@diagnostic disable-next-line: duplicate-set-field
+			statusline.section_fileinfo = function(args)
+				if vim.bo.buftype ~= "" then
+					return ""
+				end
+
+				local diagnostics_count = #vim.diagnostic.get(0)
+				local filetype = vim.bo.filetype ~= "" and vim.bo.filetype or "no ft"
+				local encoding = vim.bo.fileencoding ~= "" and vim.bo.fileencoding or vim.o.encoding
+				local separator = " │ "
+				local icon = ""
+
+				if vim.g.have_nerd_font then
+					local ok, devicons = pcall(require, "nvim-web-devicons")
+					if ok then
+						local filename = vim.api.nvim_buf_get_name(0)
+						local icon_str = devicons.get_icon(filename, nil, { default = true })
+						icon = (icon_str or "") .. " "
+					end
+				end
+
+				if statusline.is_truncated(args.trunc_width) then
+					return " " .. diagnostics_count .. separator .. icon .. filetype
+				end
+
+				return " " .. diagnostics_count .. separator .. icon .. filetype .. separator .. encoding
 			end
 
 			---@diagnostic disable-next-line: duplicate-set-field
