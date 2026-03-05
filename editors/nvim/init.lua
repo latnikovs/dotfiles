@@ -82,6 +82,7 @@ vim.o.inccommand = "split"
 
 -- Show which line your cursor is on
 vim.o.cursorline = true
+vim.o.guicursor = "n-v-c:block,i-ci-ve:block,r-cr:hor20,o:hor50"
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
@@ -106,6 +107,82 @@ vim.filetype.add({
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("i", "jj", "<Esc>")
 vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "[W]rite file" })
+
+local day_theme = "catppuccin-latte"
+local night_theme = "catppuccin-macchiato"
+local theme_state_file = vim.fn.stdpath("state") .. "/theme.txt"
+
+local function known_theme(theme_name)
+	return theme_name == day_theme or theme_name == night_theme
+end
+
+local function set_background_for_theme(theme_name)
+	vim.o.background = theme_name == day_theme and "light" or "dark"
+end
+
+local function persist_theme(theme_name)
+	pcall(vim.fn.mkdir, vim.fn.fnamemodify(theme_state_file, ":h"), "p")
+	pcall(vim.fn.writefile, { theme_name }, theme_state_file)
+end
+
+local function read_persisted_theme()
+	local ok, lines = pcall(vim.fn.readfile, theme_state_file)
+	if not ok or not lines or #lines == 0 then
+		return night_theme
+	end
+
+	local saved = vim.trim(lines[1])
+	if known_theme(saved) then
+		return saved
+	end
+
+	if saved == "islands-light" then
+		return day_theme
+	end
+
+	-- Backward compatibility with the previous auto/manual format.
+	if saved == "manual" then
+		local manual_theme = vim.trim(lines[2] or "")
+		if known_theme(manual_theme) then
+			return manual_theme
+		end
+	end
+
+	return night_theme
+end
+
+local function apply_theme(theme_name)
+	if not known_theme(theme_name) then
+		return false
+	end
+
+	set_background_for_theme(theme_name)
+	local ok = pcall(vim.cmd.colorscheme, theme_name)
+	if not ok then
+		vim.notify("Failed to apply theme: " .. theme_name, vim.log.levels.WARN)
+		return false
+	end
+
+	return true
+end
+
+local function set_theme(theme_name)
+	if apply_theme(theme_name) then
+		persist_theme(theme_name)
+	end
+end
+
+local function toggle_theme()
+	local current = vim.g.colors_name
+	if current == "catppuccin" then
+		current = night_theme
+	end
+
+	local next_theme = current == day_theme and night_theme or day_theme
+	set_theme(next_theme)
+end
+
+vim.keymap.set("n", "<leader>tt", toggle_theme, { desc = "[T]oggle [T]heme" })
 
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
@@ -970,10 +1047,8 @@ require("lazy").setup({
 					which_key = true,
 				},
 			})
-			vim.cmd.colorscheme("catppuccin")
 		end,
 	},
-
 	-- Highlight todo, notes, etc in comments
 	{
 		"folke/todo-comments.nvim",
@@ -1187,6 +1262,13 @@ require("lazy").setup({
 			lazy = "💤 ",
 		},
 	},
+})
+
+vim.api.nvim_create_autocmd("VimEnter", {
+	once = true,
+	callback = function()
+		apply_theme(read_persisted_theme())
+	end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
