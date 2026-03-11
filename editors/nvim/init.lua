@@ -82,7 +82,20 @@ vim.o.inccommand = "split"
 
 -- Show which line your cursor is on
 vim.o.cursorline = true
-vim.o.guicursor = "n-v-c:block,i-ci-ve:block,r-cr:hor20,o:hor50"
+vim.o.guicursor = "n-v-c:block,i-ci-ve:ver50-CursorInsert,r-cr:hor20,o:hor50"
+
+local function set_cursor_highlights()
+	if vim.o.background == "light" then
+		vim.api.nvim_set_hl(0, "CursorInsert", { fg = "#ffffff", bg = "#1750eb" })
+	else
+		vim.api.nvim_set_hl(0, "CursorInsert", { fg = "#1e1e2e", bg = "#f9e2af" })
+	end
+end
+
+set_cursor_highlights()
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = set_cursor_highlights,
+})
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
