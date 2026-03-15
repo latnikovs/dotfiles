@@ -842,23 +842,32 @@ require("lazy").setup({
 			--    :Mason
 			--
 			-- You can press `g?` for help in this menu.
-			local ensure_installed = {
-				"gopls",
-				"jdtls",
-				"angular-language-server",
-				"html-lsp",
-				"css-lsp",
-				"tailwindcss-language-server",
-				"typescript-language-server",
-				"lua-language-server", -- Mason package for Lua language server
-				"stylua", -- Used to format Lua code
+			local mason_package_for_server = {
+				angularls = "angular-language-server",
+				cssls = "css-lsp",
+				html = "html-lsp",
+				lua_ls = "lua-language-server",
+				tailwindcss = "tailwindcss-language-server",
+				ts_ls = "typescript-language-server",
+			}
+
+			local extra_tools = {
+				"stylua",
 				"gofumpt",
 				"goimports",
 				"prettierd",
 				"prettier",
-				"google-java-format", -- Java formatter following Google's style guide
-				-- You can add other tools here that you want Mason to install
+				"google-java-format",
 			}
+
+			local ensure_installed = vim.tbl_keys(servers)
+			table.insert(ensure_installed, "lua_ls")
+
+			for i, server_name in ipairs(ensure_installed) do
+				ensure_installed[i] = mason_package_for_server[server_name] or server_name
+			end
+
+			vim.list_extend(ensure_installed, extra_tools)
 
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
