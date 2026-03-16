@@ -1,6 +1,6 @@
 # By default Reload config with shft + cmd + ,
-config-file = themes/rosepine
-background-opacity = 0.88
+theme = light:Catppuccin Latte,dark:Catppuccin Macchiato
+background-opacity = 1
 background-blur-radius = 25
 
 font-family = JetBrainsMonoNL Nerd Font
