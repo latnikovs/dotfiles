@@ -6,6 +6,8 @@ Personal dotfiles for a macOS/Linux development environment.
 
 - IntelliJ IdeaVim: `~/.ideavimrc`
 - Neovim: `~/.config/nvim`
+- Ghostty (macOS): `~/Library/Application Support/com.mitchellh.ghostty`
+- Ghostty (Linux/XDG): `~/.config/ghostty`
 - tmux: `~/.tmux.conf`
 
 ## Installation
@@ -18,6 +20,8 @@ The installer creates these symlinks:
 
 - `~/.ideavimrc` -> `editors/intellij/ideavimrc`
 - `~/.config/nvim` -> `editors/nvim`
+- macOS: `~/Library/Application Support/com.mitchellh.ghostty` -> `terminal/ghostty`
+- Linux/XDG: `~/.config/ghostty` -> `terminal/ghostty`
 - `~/.tmux.conf` -> `terminal/tmux/tmux.conf`
 
 If a target already exists and is not a symlink, it is moved to a `.bak` file before linking.

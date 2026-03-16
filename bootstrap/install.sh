@@ -42,6 +42,13 @@ install_macos_deps() {
     echo "Nerd Font already installed: font-jetbrains-mono-nerd-font"
   fi
 
+  if ! brew list --cask ghostty >/dev/null 2>&1; then
+    echo "Installing Ghostty cask: ghostty"
+    brew install --cask ghostty
+  else
+    echo "Ghostty already installed: ghostty"
+  fi
+
   if ! xcode-select -p >/dev/null 2>&1; then
     echo "Xcode Command Line Tools are required for some builds."
     echo "Run: xcode-select --install"
@@ -94,6 +101,11 @@ link_dotfile() {
 
 link_dotfile "$ROOT_DIR/editors/intellij/ideavimrc" "$HOME/.ideavimrc" "ideavimrc"
 link_dotfile "$ROOT_DIR/editors/nvim" "$HOME/.config/nvim" "nvim"
+if [ "$(uname -s)" = "Darwin" ]; then
+  link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty" "ghostty (macOS)"
+else
+  link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/.config/ghostty" "ghostty"
+fi
 link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 
 install_macos_deps

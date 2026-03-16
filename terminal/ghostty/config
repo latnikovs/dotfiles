@@ -1,0 +1,72 @@
+# By default Reload config with shft + cmd + ,
+config-file = themes/rosepine
+background-opacity = 0.88
+background-blur-radius = 25
+
+font-family = JetBrainsMonoNL Nerd Font
+font-size = 20
+font-feature = -liga,-calt,-dlig
+cursor-style = block
+cursor-style-blink = false
+cursor-color = cell-foreground
+cursor-text = cell-background
+unfocused-split-opacity = 0.55
+split-divider-color = #524f67
+
+macos-titlebar-style = hidden
+macos-option-as-alt = true
+mouse-hide-while-typing = true
+
+confirm-close-surface = false
+window-decoration = auto
+window-padding-x = 10
+window-padding-y = 10
+window-padding-balance = true
+
+auto-update = check
+auto-update-channel = stable
+
+# extras
+shell-integration-features = no-cursor
+copy-on-select = clipboard
+# cmd or alt c copy (not vim yank)
+
+# Custom Keybinds & Config (super = cmd key on mac)
+# For Simple Keybinds
+keybind = ctrl+bracket_left=text:\x1b
+keybind = super+i=inspector:toggle
+keybind = super+shift+g>[=reload_config
+
+#-------------------------------------------
+
+# Similar to Tmux Panes (no sessions)
+# this only works if you have `macos-titlebar-style = tabs or native or transparent` else it behaves like new window
+keybind = super+shift+g>c=new_tab
+keybind = super+shift+g>n=new_window
+keybind = super+shift+g>x=close_surface
+
+# tab nav
+keybind = super+shift+g>1=goto_tab:1
+keybind = super+shift+g>2=goto_tab:2
+keybind = super+shift+g>3=goto_tab:3
+keybind = super+shift+g>4=goto_tab:4
+keybind = super+shift+g>5=goto_tab:5
+keybind = super+shift+g>6=goto_tab:6
+keybind = super+shift+g>7=goto_tab:7
+keybind = super+shift+g>8=goto_tab:8
+keybind = super+shift+g>9=goto_tab:9
+
+# splitting
+keybind = super+shift+g>\=new_split:right
+keybind = super+shift+g>-=new_split:down
+keybind = super+shift+g>e=equalize_splits
+
+# split nav (setting this to control will not work if tmux already uses it)
+keybind = super+shift+g>h=goto_split:left
+keybind = super+shift+g>j=goto_split:bottom
+keybind = super+shift+g>k=goto_split:top
+keybind = super+shift+g>l=goto_split:right
+
+#Shaders
+# custom-shader = shaders/bettercrt.glsl
+# custom-shader = shaders/retro-terminal.glsl
