@@ -18,7 +18,7 @@ install_macos_deps() {
     return
   fi
 
-  local packages=(neovim ripgrep fd node tmux)
+  local packages=(neovim ripgrep fd node tmux tree-sitter-cli)
   local missing=()
   local pkg
 
