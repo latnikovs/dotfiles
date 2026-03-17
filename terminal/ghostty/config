@@ -1,5 +1,5 @@
 # By default Reload config with shft + cmd + ,
-theme = light:Catppuccin Latte,dark:Catppuccin Macchiato
+theme = Catppuccin Latte
 background-opacity = 1
 background-blur-radius = 25
 
@@ -66,7 +66,3 @@ keybind = super+shift+g>h=goto_split:left
 keybind = super+shift+g>j=goto_split:bottom
 keybind = super+shift+g>k=goto_split:top
 keybind = super+shift+g>l=goto_split:right
-
-#Shaders
-# custom-shader = shaders/bettercrt.glsl
-# custom-shader = shaders/retro-terminal.glsl
