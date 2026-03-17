@@ -1,5 +1,5 @@
 # By default Reload config with shft + cmd + ,
-theme = Catppuccin Latte
+theme = light:Catppuccin Latte,dark:Catppuccin Macchiato
 background-opacity = 1
 background-blur-radius = 25
 
