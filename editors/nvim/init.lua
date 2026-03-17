@@ -82,20 +82,20 @@ vim.o.inccommand = "split"
 
 -- Show which line your cursor is on
 vim.o.cursorline = true
-vim.o.guicursor = "n-v-c:block,i-ci-ve:ver50-CursorInsert,r-cr:hor20,o:hor50"
-
-local function set_cursor_highlights()
-	if vim.o.background == "light" then
-		vim.api.nvim_set_hl(0, "CursorInsert", { fg = "#ffffff", bg = "#1750eb" })
-	else
-		vim.api.nvim_set_hl(0, "CursorInsert", { fg = "#1e1e2e", bg = "#f9e2af" })
-	end
-end
-
-set_cursor_highlights()
-vim.api.nvim_create_autocmd("ColorScheme", {
-	callback = set_cursor_highlights,
-})
+-- vim.o.guicursor = "n-v-c:block,i-ci-ve:block-CursorInsert,r-cr:hor20,o:hor50"
+--
+-- local function set_cursor_highlights()
+-- 	if vim.o.background == "light" then
+-- 		vim.api.nvim_set_hl(0, "CursorInsert", { fg = "#ffffff", bg = "#0b57d0" })
+-- 	else
+-- 		vim.api.nvim_set_hl(0, "CursorInsert", { fg = "#1e1e2e", bg = "#f9e2af" })
+-- 	end
+-- end
+--
+-- set_cursor_highlights()
+-- vim.api.nvim_create_autocmd("ColorScheme", {
+-- 	callback = set_cursor_highlights,
+-- })
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
@@ -121,7 +121,7 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("i", "jj", "<Esc>")
 vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "[W]rite file" })
 
-local day_theme = "catppuccin-latte"
+local day_theme = "github_light_default"
 local night_theme = "catppuccin-macchiato"
 local theme_state_file = vim.fn.stdpath("state") .. "/theme.txt"
 
@@ -147,10 +147,6 @@ local function read_persisted_theme()
 	local saved = vim.trim(lines[1])
 	if known_theme(saved) then
 		return saved
-	end
-
-	if saved == "islands-light" then
-		return day_theme
 	end
 
 	-- Backward compatibility with the previous auto/manual format.
@@ -1076,6 +1072,11 @@ require("lazy").setup({
 				},
 			})
 		end,
+	},
+	{
+		"projekt0n/github-nvim-theme",
+		name = "github-theme",
+		priority = 1000,
 	},
 	-- Highlight todo, notes, etc in comments
 	{
