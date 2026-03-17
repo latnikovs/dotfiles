@@ -49,6 +49,13 @@ install_macos_deps() {
     echo "Ghostty already installed: ghostty"
   fi
 
+  if ! brew list --cask nikitabobko/tap/aerospace >/dev/null 2>&1; then
+    echo "Installing Aerospace cask: nikitabobko/tap/aerospace"
+    brew install --cask nikitabobko/tap/aerospace
+  else
+    echo "Aerospace already installed: nikitabobko/tap/aerospace"
+  fi
+
   if ! xcode-select -p >/dev/null 2>&1; then
     echo "Xcode Command Line Tools are required for some builds."
     echo "Run: xcode-select --install"
@@ -102,6 +109,7 @@ link_dotfile() {
 link_dotfile "$ROOT_DIR/editors/intellij/ideavimrc" "$HOME/.ideavimrc" "ideavimrc"
 link_dotfile "$ROOT_DIR/editors/nvim" "$HOME/.config/nvim" "nvim"
 if [ "$(uname -s)" = "Darwin" ]; then
+  link_dotfile "$ROOT_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml" "aerospace"
   link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty" "ghostty (macOS)"
 else
   link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/.config/ghostty" "ghostty"
