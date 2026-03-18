@@ -106,38 +106,32 @@ alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
 alt-4 = 'workspace 4'
-alt-5 = 'workspace 5'
-alt-6 = 'workspace 6'
-alt-7 = 'workspace 7'
-alt-8 = 'workspace 8'
-alt-9 = 'workspace 9'
 alt-b = 'workspace B' # browser
 alt-d = 'workspace D' # docs
 alt-e = 'workspace E' # finder
 alt-m = 'workspace M' # music
 alt-n = 'workspace N' # notes
 alt-p = 'workspace P' # photo editing
+alt-s = 'workspace S' # safari
 alt-t = 'workspace T' # terminal
 alt-v = 'workspace V' # video editing
+alt-w = 'workspace W' # intellij
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 cmd-ctrl-alt-shift-1 = 'move-node-to-workspace 1'
 cmd-ctrl-alt-shift-2 = 'move-node-to-workspace 2'
 cmd-ctrl-alt-shift-3 = 'move-node-to-workspace 3'
 cmd-ctrl-alt-shift-4 = 'move-node-to-workspace 4'
-cmd-ctrl-alt-shift-5 = 'move-node-to-workspace 5'
-cmd-ctrl-alt-shift-6 = 'move-node-to-workspace 6'
-cmd-ctrl-alt-shift-7 = 'move-node-to-workspace 7'
-cmd-ctrl-alt-shift-8 = 'move-node-to-workspace 8'
-cmd-ctrl-alt-shift-9 = 'move-node-to-workspace 9'
 cmd-ctrl-alt-shift-b = 'move-node-to-workspace B'
 cmd-ctrl-alt-shift-d = 'move-node-to-workspace D'
 cmd-ctrl-alt-shift-e = 'move-node-to-workspace E'
 cmd-ctrl-alt-shift-m = 'move-node-to-workspace M'
 cmd-ctrl-alt-shift-n = 'move-node-to-workspace N'
 cmd-ctrl-alt-shift-p = 'move-node-to-workspace P'
+cmd-ctrl-alt-shift-s = 'move-node-to-workspace S'
 cmd-ctrl-alt-shift-t = 'move-node-to-workspace T'
 cmd-ctrl-alt-shift-v = 'move-node-to-workspace V'
+cmd-ctrl-alt-shift-w = 'move-node-to-workspace W'
 
 cmd-ctrl-alt-shift-f = 'fullscreen'
 
@@ -186,12 +180,24 @@ run = "move-node-to-workspace T"
 
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
-run = "move-node-to-workspace B"
+run = "move-node-to-workspace E"
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Safari'
-run = "move-node-to-workspace B"
+run = "move-node-to-workspace S"
 
 [[on-window-detected]]
 if.app-id = 'com.brave.Browser'
 run = "move-node-to-workspace B"
+
+[[on-window-detected]]
+if.app-id = 'com.apple.mail'
+run = "move-node-to-workspace M"
+
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'com.jetbrains.intellij'
+run = "move-node-to-workspace W"
