@@ -109,6 +109,18 @@ link_dotfile() {
 link_dotfile "$ROOT_DIR/editors/intellij/ideavimrc" "$HOME/.ideavimrc" "ideavimrc"
 link_dotfile "$ROOT_DIR/editors/nvim" "$HOME/.config/nvim" "nvim"
 if [ "$(uname -s)" = "Darwin" ]; then
+  aerospace_xdg_config="$HOME/.config/aerospace/aerospace.toml"
+  if [ -e "$aerospace_xdg_config" ] || [ -L "$aerospace_xdg_config" ]; then
+    if [ -L "$aerospace_xdg_config" ]; then
+      echo "Removing duplicate AeroSpace config symlink: $aerospace_xdg_config"
+      rm "$aerospace_xdg_config"
+      rmdir "$HOME/.config/aerospace" 2>/dev/null || true
+    else
+      echo "Backing up duplicate AeroSpace config to $aerospace_xdg_config.bak"
+      mv "$aerospace_xdg_config" "$aerospace_xdg_config.bak"
+    fi
+  fi
+
   link_dotfile "$ROOT_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml" "aerospace"
   link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty" "ghostty (macOS)"
 else
