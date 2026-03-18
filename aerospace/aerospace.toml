@@ -108,6 +108,7 @@ alt-3 = 'workspace 3'
 alt-b = 'workspace B' # browser
 alt-c = 'workspace C' # chrome
 alt-e = 'workspace E' # finder
+alt-g = 'workspace G' # chatgpt
 alt-m = 'workspace M' # mail
 alt-n = 'workspace N' # obsidian
 alt-s = 'workspace S' # safari
@@ -122,6 +123,7 @@ cmd-ctrl-alt-shift-3 = 'move-node-to-workspace 3'
 cmd-ctrl-alt-shift-b = 'move-node-to-workspace B'
 cmd-ctrl-alt-shift-c = 'move-node-to-workspace C'
 cmd-ctrl-alt-shift-e = 'move-node-to-workspace E'
+cmd-ctrl-alt-shift-g = 'move-node-to-workspace G'
 cmd-ctrl-alt-shift-m = 'move-node-to-workspace M'
 cmd-ctrl-alt-shift-n = 'move-node-to-workspace N'
 cmd-ctrl-alt-shift-s = 'move-node-to-workspace S'
@@ -205,3 +207,7 @@ run = "move-node-to-workspace U"
 [[on-window-detected]]
 if.app-id = 'com.microsoft.teams2'
 run = "move-node-to-workspace Y"
+
+[[on-window-detected]]
+if.app-id = 'com.openai.chat'
+run = "move-node-to-workspace G"
