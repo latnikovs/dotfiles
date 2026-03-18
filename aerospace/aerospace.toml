@@ -105,35 +105,29 @@ cmd-ctrl-alt-shift-l = 'move right'
 alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
-alt-4 = 'workspace 4'
 alt-b = 'workspace B' # browser
-alt-d = 'workspace D' # docs
 alt-c = 'workspace C' # chrome
 alt-e = 'workspace E' # finder
-alt-m = 'workspace M' # music
-alt-n = 'workspace N' # notes
-alt-p = 'workspace P' # photo editing
+alt-m = 'workspace M' # mail
+alt-n = 'workspace N' # obsidian
 alt-s = 'workspace S' # safari
 alt-t = 'workspace T' # terminal
-alt-v = 'workspace V' # video editing
-alt-w = 'workspace W' # intellij
+alt-u = 'workspace U' # telegram
+alt-y = 'workspace Y' # teams
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 cmd-ctrl-alt-shift-1 = 'move-node-to-workspace 1'
 cmd-ctrl-alt-shift-2 = 'move-node-to-workspace 2'
 cmd-ctrl-alt-shift-3 = 'move-node-to-workspace 3'
-cmd-ctrl-alt-shift-4 = 'move-node-to-workspace 4'
 cmd-ctrl-alt-shift-b = 'move-node-to-workspace B'
-cmd-ctrl-alt-shift-d = 'move-node-to-workspace D'
 cmd-ctrl-alt-shift-c = 'move-node-to-workspace C'
 cmd-ctrl-alt-shift-e = 'move-node-to-workspace E'
 cmd-ctrl-alt-shift-m = 'move-node-to-workspace M'
 cmd-ctrl-alt-shift-n = 'move-node-to-workspace N'
-cmd-ctrl-alt-shift-p = 'move-node-to-workspace P'
 cmd-ctrl-alt-shift-s = 'move-node-to-workspace S'
 cmd-ctrl-alt-shift-t = 'move-node-to-workspace T'
-cmd-ctrl-alt-shift-v = 'move-node-to-workspace V'
-cmd-ctrl-alt-shift-w = 'move-node-to-workspace W'
+cmd-ctrl-alt-shift-u = 'move-node-to-workspace U'
+cmd-ctrl-alt-shift-y = 'move-node-to-workspace Y'
 
 cmd-ctrl-alt-shift-f = 'fullscreen'
 
@@ -201,9 +195,13 @@ if.app-id = 'md.obsidian'
 run = "move-node-to-workspace N"
 
 [[on-window-detected]]
-if.app-id = 'com.jetbrains.intellij'
-run = "move-node-to-workspace W"
-
-[[on-window-detected]]
 if.app-id = 'com.apple.finder'
 run = "move-node-to-workspace E"
+
+[[on-window-detected]]
+if.app-id = 'com.tdesktop.Telegram'
+run = "move-node-to-workspace U"
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.teams2'
+run = "move-node-to-workspace Y"
