@@ -109,6 +109,8 @@ alt-b = 'workspace B' # browser
 alt-c = 'workspace C' # chrome
 alt-e = 'workspace E' # finder
 alt-g = 'workspace G' # chatgpt
+alt-i = 'workspace I' # intellij
+alt-o = 'workspace O' # keepassxc
 alt-m = 'workspace M' # mail
 alt-n = 'workspace N' # obsidian
 alt-s = 'workspace S' # safari
@@ -124,6 +126,7 @@ cmd-ctrl-alt-shift-b = 'move-node-to-workspace B'
 cmd-ctrl-alt-shift-c = 'move-node-to-workspace C'
 cmd-ctrl-alt-shift-e = 'move-node-to-workspace E'
 cmd-ctrl-alt-shift-g = 'move-node-to-workspace G'
+cmd-ctrl-alt-shift-i = 'move-node-to-workspace I'
 cmd-ctrl-alt-shift-m = 'move-node-to-workspace M'
 cmd-ctrl-alt-shift-n = 'move-node-to-workspace N'
 cmd-ctrl-alt-shift-s = 'move-node-to-workspace S'
@@ -211,3 +214,15 @@ run = "move-node-to-workspace Y"
 [[on-window-detected]]
 if.app-id = 'com.openai.chat'
 run = "move-node-to-workspace G"
+
+[[on-window-detected]]
+if.app-id = 'com.jetbrains.intellij'
+run = "move-node-to-workspace I"
+
+[[on-window-detected]]
+if.app-id = 'org.keepassxc.keepassxc'
+run = "move-node-to-workspace O"
+
+[[on-window-detected]]
+if.app-id = 'com.jetbrains.intellij.ce'
+run = "move-node-to-workspace I"
