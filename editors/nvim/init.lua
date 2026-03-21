@@ -266,6 +266,23 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "java", "groovy" },
+	callback = function(event)
+		local java_tests = require("custom.java_tests")
+		local opts = { buffer = event.buf, silent = true }
+		vim.keymap.set("n", "<leader>jt", java_tests.jump_source_or_test, vim.tbl_extend("force", opts, {
+			desc = "Java: Jump source/test",
+		}))
+		vim.keymap.set("n", "<leader>tc", java_tests.run_class_picker, vim.tbl_extend("force", opts, {
+			desc = "Java: Run test class",
+		}))
+		vim.keymap.set("n", "<leader>tn", java_tests.run_nearest, vim.tbl_extend("force", opts, {
+			desc = "Java: Run nearest test",
+		}))
+	end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
