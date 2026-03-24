@@ -97,6 +97,12 @@ vim.o.cursorline = true
 -- 	callback = set_cursor_highlights,
 -- })
 
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = function()
+		vim.api.nvim_set_hl(0, "NeoTreeFileName", { link = "NeoTreeNormal" })
+	end,
+})
+
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
 
