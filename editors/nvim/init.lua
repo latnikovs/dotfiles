@@ -123,6 +123,7 @@ vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "[W]rite file" })
 
 local day_theme = "github_light_default"
 local night_theme = "catppuccin-macchiato"
+local theme_state_file = vim.fn.stdpath("state") .. "/theme.txt"
 
 local function known_theme(theme_name)
 	return theme_name == day_theme or theme_name == night_theme
@@ -130,6 +131,25 @@ end
 
 local function set_background_for_theme(theme_name)
 	vim.o.background = theme_name == day_theme and "light" or "dark"
+end
+
+local function persist_theme(theme_name)
+	pcall(vim.fn.mkdir, vim.fn.fnamemodify(theme_state_file, ":h"), "p")
+	pcall(vim.fn.writefile, { theme_name }, theme_state_file)
+end
+
+local function read_persisted_theme()
+	local ok, lines = pcall(vim.fn.readfile, theme_state_file)
+	if not ok or not lines or #lines == 0 then
+		return day_theme
+	end
+
+	local saved = vim.trim(lines[1])
+	if known_theme(saved) then
+		return saved
+	end
+
+	return day_theme
 end
 
 local function apply_theme(theme_name)
@@ -148,7 +168,9 @@ local function apply_theme(theme_name)
 end
 
 local function set_theme(theme_name)
-	apply_theme(theme_name)
+	if apply_theme(theme_name) then
+		persist_theme(theme_name)
+	end
 end
 
 local function toggle_theme()
@@ -1285,6 +1307,13 @@ require("lazy").setup({
 			lazy = "💤 ",
 		},
 	},
+})
+
+vim.api.nvim_create_autocmd("VimEnter", {
+	once = true,
+	callback = function()
+		set_theme(read_persisted_theme())
+	end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
