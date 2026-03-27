@@ -826,6 +826,15 @@ require("lazy").setup({
 					},
 					settings = {
 						java = {
+							eclipse = {
+								downloadSources = true,
+							},
+							maven = {
+								downloadSources = true,
+							},
+							references = {
+								includeDecompiledSources = true,
+							},
 							format = {
 								settings = {
 									-- Use Google Java Style
