@@ -468,6 +468,60 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>")
 		end,
 	},
+	{
+		"rcarriga/nvim-notify",
+		opts = {
+			background_colour = "#000000",
+			render = "wrapped-compact",
+			timeout = 3000,
+		},
+	},
+	{
+		"folke/noice.nvim",
+		event = "VeryLazy",
+		opts = {
+			views = {
+				cmdline_popup = {
+					position = {
+						row = "40%",
+						col = "50%",
+					},
+				},
+			},
+			cmdline = {
+				enabled = true,
+				view = "cmdline_popup",
+			},
+			messages = {
+				enabled = true,
+			},
+			popupmenu = {
+				enabled = true,
+			},
+			notify = {
+				enabled = true,
+				view = "notify",
+			},
+			lsp = {
+				override = {
+					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+					["vim.lsp.util.stylize_markdown"] = true,
+					["cmp.entry.get_documentation"] = true,
+				},
+			},
+			presets = {
+				bottom_search = false,
+				command_palette = true,
+				long_message_to_split = true,
+				inc_rename = false,
+				lsp_doc_border = true,
+			},
+		},
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+			"rcarriga/nvim-notify",
+		},
+	},
 	-- NOTE: Plugins can also be configured to run Lua code when they are loaded.
 	--
 	-- This is often very useful to both group configuration, as well as handle
