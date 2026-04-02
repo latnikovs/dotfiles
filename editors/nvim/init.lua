@@ -237,6 +237,8 @@ vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left wind
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+vim.keymap.set("n", "]q", "<cmd>cnext<CR>", { desc = "Quickfix next" })
+vim.keymap.set("n", "[q", "<cmd>cprev<CR>", { desc = "Quickfix previous" })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -811,6 +813,8 @@ require("lazy").setup({
 			--  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
 			--  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
+			local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+			local workspace_dir = vim.fn.stdpath("data") .. "/jdtls/" .. project_name
 
 			-- Enable the following language servers
 			--  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -821,6 +825,8 @@ require("lazy").setup({
 					cmd = {
 						"jdtls",
 						"--jvm-arg=-javaagent:" .. vim.fn.stdpath("data") .. "/mason/packages/jdtls/lombok.jar",
+						"-data",
+						workspace_dir,
 					},
 					settings = {
 						java = {
