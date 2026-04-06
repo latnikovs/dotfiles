@@ -6,6 +6,7 @@ return {
 			"nvim-neotest/nvim-nio",
 			"jay-babu/mason-nvim-dap.nvim",
 			"leoluz/nvim-dap-go",
+			"theHamsta/nvim-dap-virtual-text",
 		},
 		keys = {
 			{
@@ -82,6 +83,10 @@ return {
 		config = function()
 			local dap = require("dap")
 			local dapui = require("dapui")
+			require("nvim-dap-virtual-text").setup({
+				commented = true,
+				virt_text_pos = "eol",
+			})
 			local breakpoint_icons = vim.g.have_nerd_font and {
 				Breakpoint = "",
 				BreakpointCondition = "",

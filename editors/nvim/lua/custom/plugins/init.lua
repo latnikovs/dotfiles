@@ -13,18 +13,13 @@ return {
 		},
 		cmd = { "DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer" },
 		keys = {
-			{ "<leader>od", "<cmd>DBUIToggle<cr>", desc = "Toggle DB UI" },
+			{ "<leader>od", "<cmd>tab DBUI<cr>", desc = "Open DB UI tab" },
 		},
 		init = function()
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = { "sql", "mysql", "plsql", "pgsql", "psql", "postgres" },
 				callback = function(event)
 					vim.bo.omnifunc = "vim_dadbod_completion#omni"
-					vim.keymap.set("i", "<C-Space>", "<C-x><C-o>", {
-						buffer = event.buf,
-						silent = true,
-						desc = "Dadbod omni completion",
-					})
 				end,
 			})
 		end,

@@ -1091,8 +1091,19 @@ require("lazy").setup({
 				documentation = { auto_show = false, auto_show_delay_ms = 500 },
 			},
 
-			sources = {
-				default = { "lsp", "path", "snippets" },
+				sources = {
+					default = { "lsp", "path", "snippets" },
+					per_filetype = {
+						sql = { "snippets", "dadbod", "buffer" },
+						mysql = { "snippets", "dadbod", "buffer" },
+						plsql = { "snippets", "dadbod", "buffer" },
+						pgsql = { "snippets", "omni", "buffer" },
+						psql = { "snippets", "omni", "buffer" },
+						postgres = { "snippets", "omni", "buffer" },
+					},
+					providers = {
+						dadbod = { name = "Dadbod", module = "vim_dadbod_completion.blink" },
+					},
 			},
 
 			snippets = { preset = "luasnip" },
