@@ -13,7 +13,7 @@ return {
 		},
 		cmd = { "DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer" },
 		keys = {
-			{ "<leader>db", "<cmd>DBUIToggle<cr>", desc = "Toggle DB UI" },
+			{ "<leader>od", "<cmd>DBUIToggle<cr>", desc = "Toggle DB UI" },
 		},
 		init = function()
 			vim.api.nvim_create_autocmd("FileType", {

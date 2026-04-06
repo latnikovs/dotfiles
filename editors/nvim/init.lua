@@ -546,6 +546,7 @@ require("lazy").setup({
 
 			-- Document existing key chains
 			spec = {
+				{ "<leader>d", group = "[D]ebug" },
 				{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
 				{ "<leader>t", group = "[T]oggle" },
 				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
@@ -867,42 +868,12 @@ require("lazy").setup({
 			--  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
 			--  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
-			local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
-			local workspace_dir = vim.fn.stdpath("data") .. "/jdtls/" .. project_name
 
 			-- Enable the following language servers
 			--  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
 			--  See `:help lsp-config` for information about keys and how to configure
 			local servers = {
 				gopls = {},
-				jdtls = {
-					cmd = {
-						"jdtls",
-						"--jvm-arg=-javaagent:" .. vim.fn.stdpath("data") .. "/mason/packages/jdtls/lombok.jar",
-						"-data",
-						workspace_dir,
-					},
-					settings = {
-						java = {
-							eclipse = {
-								downloadSources = true,
-							},
-							maven = {
-								downloadSources = true,
-							},
-							references = {
-								includeDecompiledSources = true,
-							},
-							format = {
-								settings = {
-									-- Use Google Java Style
-									url = "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
-									profile = "GoogleStyle",
-								},
-							},
-						},
-					},
-				},
 				angularls = {},
 				html = {},
 				cssls = {},
@@ -936,6 +907,9 @@ require("lazy").setup({
 			}
 
 			local extra_tools = {
+				"jdtls",
+				"java-debug-adapter",
+				"java-test",
 				"stylua",
 				"gofumpt",
 				"goimports",
