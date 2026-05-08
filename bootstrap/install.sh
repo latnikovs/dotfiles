@@ -98,14 +98,25 @@ link_dotfile() {
 
   mkdir -p "$(dirname "$dest")"
 
-  if [ -e "$dest" ] && [ ! -L "$dest" ]; then
-    echo "Backing up existing $dest to $dest.bak"
-    mv "$dest" "$dest.bak"
-  fi
-
   if [ -L "$dest" ]; then
-    echo "$dest already linked"
-    return
+    if [ "$(readlink "$dest")" = "$src" ]; then
+      echo "$dest already linked"
+      return
+    fi
+
+    echo "Updating symlink $dest to $src"
+    rm "$dest"
+  elif [ -e "$dest" ]; then
+    local backup="$dest.bak"
+    local backup_index=1
+
+    while [ -e "$backup" ] || [ -L "$backup" ]; do
+      backup="$dest.bak.$backup_index"
+      backup_index=$((backup_index + 1))
+    done
+
+    echo "Backing up existing $dest to $backup"
+    mv "$dest" "$backup"
   fi
 
   ln -s "$src" "$dest"
