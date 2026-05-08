@@ -56,6 +56,13 @@ install_macos_deps() {
     echo "Aerospace already installed: nikitabobko/tap/aerospace"
   fi
 
+  if ! brew list --cask karabiner-elements >/dev/null 2>&1; then
+    echo "Installing Karabiner-Elements cask: karabiner-elements"
+    brew install --cask karabiner-elements
+  else
+    echo "Karabiner-Elements already installed: karabiner-elements"
+  fi
+
   if ! xcode-select -p >/dev/null 2>&1; then
     echo "Xcode Command Line Tools are required for some builds."
     echo "Run: xcode-select --install"
@@ -122,6 +129,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
   fi
 
   link_dotfile "$ROOT_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml" "aerospace"
+  link_dotfile "$ROOT_DIR/karabiner/karabiner.json" "$HOME/.config/karabiner/karabiner.json" "karabiner"
   link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty" "ghostty (macOS)"
 else
   link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/.config/ghostty" "ghostty"
