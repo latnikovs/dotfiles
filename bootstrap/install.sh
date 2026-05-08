@@ -63,6 +63,13 @@ install_macos_deps() {
     echo "Karabiner-Elements already installed: karabiner-elements"
   fi
 
+  if ! brew list --cask xykong/tap/flux-markdown >/dev/null 2>&1; then
+    echo "Installing Flux Markdown cask: xykong/tap/flux-markdown"
+    brew install --cask xykong/tap/flux-markdown
+  else
+    echo "Flux Markdown already installed: xykong/tap/flux-markdown"
+  fi
+
   if ! xcode-select -p >/dev/null 2>&1; then
     echo "Xcode Command Line Tools are required for some builds."
     echo "Run: xcode-select --install"
