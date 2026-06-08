@@ -677,15 +677,29 @@ require("lazy").setup({
 				group = vim.api.nvim_create_augroup("telescope-lsp-attach", { clear = true }),
 				callback = function(event)
 					local buf = event.buf
+					local function goto_definition()
+						vim.lsp.buf.definition({
+							on_list = function(options)
+								if #options.items == 1 then
+									local item = options.items[1]
+									vim.cmd.edit(vim.fn.fnameescape(item.filename))
+									vim.api.nvim_win_set_cursor(0, { item.lnum, item.col - 1 })
+									return
+								end
+
+								builtin.lsp_definitions()
+							end,
+						})
+					end
 
 					-- Find references for the word under your cursor.
-					vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = buf, desc = "[G]oto [R]eferences" })
+					vim.keymap.set("n", "grr", builtin.lsp_references, { buffer = buf, desc = "[G]oto [R]eferences" })
 
 					-- Jump to the implementation of the word under your cursor.
 					-- Useful when your language has ways of declaring types without an actual implementation.
 					vim.keymap.set(
 						"n",
-						"gi",
+						"gri",
 						builtin.lsp_implementations,
 						{ buffer = buf, desc = "[G]oto [I]mplementation" }
 					)
@@ -693,7 +707,7 @@ require("lazy").setup({
 					-- Jump to the definition of the word under your cursor.
 					-- This is where a variable was first declared, or where a function is defined, etc.
 					-- To jump back, press <C-t>.
-					vim.keymap.set("n", "gd", builtin.lsp_definitions, { buffer = buf, desc = "[G]oto [D]efinition" })
+					vim.keymap.set("n", "gd", goto_definition, { buffer = buf, desc = "[G]oto [D]efinition" })
 
 					-- Fuzzy find all the symbols in your current document.
 					-- Symbols are things like variables, functions, types, etc.

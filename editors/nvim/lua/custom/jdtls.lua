@@ -85,7 +85,11 @@ function M.start_or_attach()
 
 	if #bundles > 0 then
 		jdtls.setup_dap({ hotcodereplace = "auto" })
-		jdtls.dap.setup_dap_main_class_configs()
+
+		local ok, jdtls_dap = pcall(require, "jdtls.dap")
+		if ok then
+			jdtls_dap.setup_dap_main_class_configs()
+		end
 	end
 end
 
