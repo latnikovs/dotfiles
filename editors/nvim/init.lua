@@ -223,12 +223,12 @@ vim.keymap.set("n", "<leader>ls", vim.lsp.buf.document_symbol, { desc = "Open [L
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
--- Open a terminal in a horizontal split below, sized and ready to type in
-vim.keymap.set("n", "<leader>'", function()
-	vim.cmd("belowright split | terminal")
+-- Open a terminal in a full-width split at the bottom, ready to type in
+vim.keymap.set("n", "<leader>ot", function()
+	vim.cmd("botright split | terminal")
 	vim.cmd("resize 15")
 	vim.cmd("startinsert")
-end, { desc = "Open [T]erminal split below" })
+end, { desc = "[O]pen [T]erminal split" })
 
 -- TIP: Disable arrow keys in normal mode
 vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
@@ -556,6 +556,7 @@ require("lazy").setup({
 				{ "<leader>d", group = "[D]ebug" },
 				{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
 				{ "<leader>t", group = "[T]oggle" },
+				{ "<leader>o", group = "[O]pen" },
 				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
 			},
 		},
