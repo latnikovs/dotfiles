@@ -6,11 +6,9 @@ Personal dotfiles for a macOS/Linux development environment.
 
 - IntelliJ IdeaVim: `~/.ideavimrc`
 - Neovim: `~/.config/nvim`
-- Ghostty (macOS): `~/Library/Application Support/com.mitchellh.ghostty`
-- Ghostty (Linux/XDG): `~/.config/ghostty`
+- kitty: `~/.config/kitty`
 - tmux: `~/.tmux.conf`, status bar modules in `~/.tmux/scripts`
 - Yazi: `~/.config/yazi`
-- kitty: `~/.config/kitty`
 
 ## Installation
 
@@ -22,11 +20,12 @@ The installer creates these symlinks:
 
 - `~/.ideavimrc` -> `editors/intellij/ideavimrc`
 - `~/.config/nvim` -> `editors/nvim`
-- macOS: `~/Library/Application Support/com.mitchellh.ghostty` -> `terminal/ghostty`
-- Linux/XDG: `~/.config/ghostty` -> `terminal/ghostty`
+- `~/.config/kitty` -> `terminal/kitty`
 - `~/.tmux.conf` -> `terminal/tmux/tmux.conf`
 - `~/.tmux/scripts` -> `terminal/tmux/scripts`
 - `~/.config/yazi` -> `terminal/yazi`
+- macOS only: `~/.aerospace.toml` -> `aerospace/aerospace.toml`,
+  `~/.config/karabiner/karabiner.json` -> `karabiner/karabiner.json`
 
 If a target already exists and is not a symlink, it is moved to a `.bak` file before linking.
 
@@ -36,22 +35,19 @@ Config lives in `terminal/kitty`, symlinked to `~/.config/kitty`.
 
 Colors follow the macOS appearance automatically via kitty's
 `light-theme.auto.conf` / `dark-theme.auto.conf` mechanism (kitty 0.38+):
-Catppuccin Latte when light, Catppuccin Macchiato when dark — the same pair
-Ghostty uses.
+Catppuccin Latte when light, Catppuccin Macchiato when dark.
 
-Those two files are generated from Ghostty's own theme files so both terminals
-render identical colors. To regenerate (e.g. after changing the Ghostty theme):
+Both files are generated from the palettes in `terminal/kitty/palettes` — do not
+hand-edit them. To regenerate:
 
 ```bash
-G=/Applications/Ghostty.app/Contents/Resources/ghostty/themes
-python3 terminal/kitty/generate-themes.py "$G/Catppuccin Latte" \
-  "Catppuccin Latte" terminal/kitty/light-theme.auto.conf
-python3 terminal/kitty/generate-themes.py "$G/Catppuccin Macchiato" \
-  "Catppuccin Macchiato" terminal/kitty/dark-theme.auto.conf
+python3 terminal/kitty/generate-themes.py
 ```
 
-The generator also picks `inactive_tab_foreground` by WCAG contrast against the
-background, since the palette's dim slot is unreadable on dark themes.
+The generator derives the tab bar rather than hardcoding it, picking both
+`active_tab_foreground` and `inactive_tab_foreground` by WCAG contrast: the
+palette's dim slot is unreadable on dark themes, and the accent is dark in Latte
+but light in Macchiato, so no single fixed choice works for both.
 
 ## Yazi
 
@@ -101,8 +97,8 @@ memory, battery, network and clock on the right.
 
 ### Colors follow the OS appearance
 
-Catppuccin Latte when macOS is light, Macchiato when dark — the same pair
-Ghostty and kitty use, so the bar can never end up light on a dark terminal.
+Catppuccin Latte when macOS is light, Macchiato when dark — the same pair kitty
+uses, so the bar can never end up light on a dark terminal.
 `scripts/flavor.sh` resolves the flavor at config load, and
 `scripts/theme-watch.sh` reloads the config when the appearance changes, since
 tmux has no appearance hook of its own. Pin it with `TMUX_FLAVOR=latte` or

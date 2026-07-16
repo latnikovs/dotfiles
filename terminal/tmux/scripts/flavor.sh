@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # Prints the Catppuccin flavor matching the current OS appearance.
 #
-# This is the tmux side of the same light/dark rule kitty and ghostty follow
-# (kitty: light-theme.auto.conf / dark-theme.auto.conf, ghostty:
-# `theme = light:Catppuccin Latte,dark:Catppuccin Macchiato`), so the status bar
-# cannot end up light on a dark terminal.
+# This is the tmux side of the same light/dark rule kitty follows via
+# light-theme.auto.conf / dark-theme.auto.conf, so the status bar cannot end up
+# light on a dark terminal.
 #
 # Override with TMUX_FLAVOR=latte|macchiato to pin it.
 set -u

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Reloads tmux.conf when the OS appearance stops matching the loaded flavor.
 #
-# kitty and ghostty repaint themselves the moment macOS flips between light and
-# dark; tmux has no such hook, so the status line calls this on every redraw and
-# it reloads only on an actual mismatch. It prints nothing and occupies no
-# columns: it is in the bar purely for the side effect.
+# kitty repaints itself the moment macOS flips between light and dark; tmux has
+# no such hook, so the status line calls this on every redraw and it reloads
+# only on an actual mismatch. It prints nothing and occupies no columns: it is
+# in the bar purely for the side effect.
 #
 # This converges: the reload re-runs flavor.sh through the if-shell in tmux.conf,
 # which sets @catppuccin_flavor to the value we just read, so the next call is a

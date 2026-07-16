@@ -42,13 +42,6 @@ install_macos_deps() {
     echo "Nerd Font already installed: font-jetbrains-mono-nerd-font"
   fi
 
-  if ! brew list --cask ghostty >/dev/null 2>&1; then
-    echo "Installing Ghostty cask: ghostty"
-    brew install --cask ghostty
-  else
-    echo "Ghostty already installed: ghostty"
-  fi
-
   if ! brew list --cask kitty >/dev/null 2>&1; then
     echo "Installing kitty cask: kitty"
     brew install --cask kitty
@@ -204,9 +197,6 @@ if [ "$(uname -s)" = "Darwin" ]; then
 
   link_dotfile "$ROOT_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml" "aerospace"
   link_dotfile "$ROOT_DIR/karabiner/karabiner.json" "$HOME/.config/karabiner/karabiner.json" "karabiner"
-  link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty" "ghostty (macOS)"
-else
-  link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/.config/ghostty" "ghostty"
 fi
 link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 # The status bar calls these by absolute path, so they need a stable home that
