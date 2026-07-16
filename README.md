@@ -8,7 +8,7 @@ Personal dotfiles for a macOS/Linux development environment.
 - Neovim: `~/.config/nvim`
 - Ghostty (macOS): `~/Library/Application Support/com.mitchellh.ghostty`
 - Ghostty (Linux/XDG): `~/.config/ghostty`
-- tmux: `~/.tmux.conf`
+- tmux: `~/.tmux.conf`, status bar modules in `~/.tmux/scripts`
 - Yazi: `~/.config/yazi`
 - kitty: `~/.config/kitty`
 
@@ -25,6 +25,7 @@ The installer creates these symlinks:
 - macOS: `~/Library/Application Support/com.mitchellh.ghostty` -> `terminal/ghostty`
 - Linux/XDG: `~/.config/ghostty` -> `terminal/ghostty`
 - `~/.tmux.conf` -> `terminal/tmux/tmux.conf`
+- `~/.tmux/scripts` -> `terminal/tmux/scripts`
 - `~/.config/yazi` -> `terminal/yazi`
 
 If a target already exists and is not a symlink, it is moved to a `.bak` file before linking.
@@ -92,6 +93,78 @@ fc-cache -fv
 
 After install, set your terminal font to `JetBrainsMono Nerd Font Mono`.
 
+## tmux status bar
+
+The bar is transparent and each module is a rounded pill floating on the
+terminal background: session on the left, window list centred, then git, CPU,
+memory, battery, network and clock on the right.
+
+### Colors follow the OS appearance
+
+Catppuccin Latte when macOS is light, Macchiato when dark — the same pair
+Ghostty and kitty use, so the bar can never end up light on a dark terminal.
+`scripts/flavor.sh` resolves the flavor at config load, and
+`scripts/theme-watch.sh` reloads the config when the appearance changes, since
+tmux has no appearance hook of its own. Pin it with `TMUX_FLAVOR=latte` or
+`TMUX_FLAVOR=macchiato` in the environment.
+
+Reloading goes through `scripts/reload.sh`, including `Prefix + r`, and that
+detour is load-bearing. The plugin publishes its palette with `set -ogq`, where
+`-o` means "leave an existing option alone" — so `@thm_*` is effectively frozen
+once set, and a plain `source-file` silently keeps the old flavor's colors no
+matter how often it runs. `reload.sh` unsets `@thm_*` first so the plugin can
+repopulate it. Change the reload to a bare `source-file` and the theme will
+appear to work on a fresh server and never switch on a running one.
+
+The `@thm_*` palette comes from the `catppuccin/tmux` plugin; nothing hardcodes
+a hex value except the fallbacks in the module scripts.
+
+### Modules
+
+Each module in `terminal/tmux/scripts` is a standalone script printing one pill,
+and prints nothing when it has nothing to say — the git pill disappears outside
+a work tree, the battery pill on a machine with no battery.
+
+| Script | Shows |
+| --- | --- |
+| `git.sh` | branch, `✚` staged, `●` modified, `…` untracked, conflicts, `⇡⇣` vs upstream |
+| `sys.sh` | CPU and memory load (one job, two pills) |
+| `battery.sh` | charge and charging state |
+| `online.sh` | network reachability, probe cached for 30s |
+| `flavor.sh` | the Catppuccin flavor matching the OS appearance |
+| `theme-watch.sh` | reloads the config when that appearance changes |
+| `icons.sh` | publishes the glyphs to tmux as `@cap_*` / `@ico_*` options |
+| `lib.sh` | the `pill` helper and the glyph constants |
+
+tmux parses `#[...]` style sequences out of a `#()` job's output but does not
+re-expand `#{...}` there, so each script receives its colors as arguments and
+prints its own styling. See `scripts/lib.sh`.
+
+To add a module: write a script that prints a pill, then append a `#(...)` entry
+to `status-right` in `tmux.conf`, passing the `#{@thm_*}` colors it needs.
+
+### Nerd Font glyphs are never pasted in literally
+
+Every glyph is written as a `\u` escape in `lib.sh` / `icons.sh` and reaches
+`tmux.conf` as a `#{@cap_*}` or `#{@ico_*}` option. Pasting private-use
+codepoints straight into these files is the obvious approach and a trap: they
+are invisible in editors and diffs, they carry no meaning without the patched
+font, and any tool that rewrites the file can silently drop them — which leaves
+a bar full of blank gaps that looks like a font problem but is not. The escapes
+name the exact codepoint and cannot be mangled.
+
+If an icon renders as a blank or a tofu box, check whether the glyph is actually
+reaching the screen before blaming the font — `capture-pane` shows what tmux
+drew:
+
+```bash
+tmux capture-pane -p | head -1 | python3 -c \
+  'import sys; print([hex(ord(c)) for c in sys.stdin.read() if ord(c) > 0x2500])'
+```
+
+An empty list means the glyph was lost on the way in (check `lib.sh` /
+`icons.sh`); a codepoint listed but not drawn means the font lacks it.
+
 ## tmux plugins (TPM, Resurrect, Continuum)
 
 The tmux config includes:
@@ -99,6 +172,8 @@ The tmux config includes:
 - `tmux-plugins/tpm`
 - `tmux-plugins/tmux-resurrect`
 - `tmux-plugins/tmux-continuum`
+- `catppuccin/tmux` (palette only; the status bar is defined in `tmux.conf`)
+- `omerxx/tmux-sessionx`
 
 Install TPM once:
 
@@ -110,13 +185,16 @@ Then start tmux and install plugins:
 
 - Reload config: `Prefix + r`
 - Install plugins from `.tmux.conf`: `Prefix + I`
+- Session switcher (sessionx): `Prefix + o`
 
 Useful keys for session persistence:
 
 - Save session manually: `Prefix + Ctrl-s`
 - Restore session manually: `Prefix + Ctrl-r`
 
-`tmux-continuum` is set to auto-save every 5 minutes and auto-restore on tmux start.
+`tmux-continuum` is set to auto-save every 15 minutes (its default) and
+auto-restore on tmux start. It hooks itself onto `status-right`, which is why
+the `run '~/.tmux/plugins/tpm/tpm'` line has to stay last in `tmux.conf`.
 
 ## Neovim setup
 

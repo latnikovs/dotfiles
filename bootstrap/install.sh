@@ -209,6 +209,9 @@ else
   link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/.config/ghostty" "ghostty"
 fi
 link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
+# The status bar calls these by absolute path, so they need a stable home that
+# does not depend on where this repo is checked out.
+link_dotfile "$ROOT_DIR/terminal/tmux/scripts" "$HOME/.tmux/scripts" "tmux status scripts"
 link_dotfile "$ROOT_DIR/terminal/yazi" "$HOME/.config/yazi" "yazi"
 link_dotfile "$ROOT_DIR/terminal/kitty" "$HOME/.config/kitty" "kitty"
 
