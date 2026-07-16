@@ -18,7 +18,7 @@ install_macos_deps() {
     return
   fi
 
-  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass)
+  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi)
   local missing=()
   local pkg
 
@@ -47,6 +47,13 @@ install_macos_deps() {
     brew install --cask ghostty
   else
     echo "Ghostty already installed: ghostty"
+  fi
+
+  if ! brew list --cask kitty >/dev/null 2>&1; then
+    echo "Installing kitty cask: kitty"
+    brew install --cask kitty
+  else
+    echo "kitty already installed: kitty"
   fi
 
   if ! brew list --cask nikitabobko/tap/aerospace >/dev/null 2>&1; then
@@ -91,6 +98,55 @@ install_tpm() {
 
   echo "Installing TPM to $tpm_dir"
   git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
+}
+
+install_yazi_flavors() {
+  local flavors=(956MB/vscode-dark-modern 956MB/vscode-light-modern)
+
+  if ! has_cmd ya; then
+    echo "Skipping Yazi flavors: 'ya' is not installed"
+    return
+  fi
+
+  if ! has_cmd git; then
+    echo "Skipping Yazi flavors: 'git' is not installed"
+    return
+  fi
+
+  local installed
+  installed="$(ya pkg list 2>/dev/null || true)"
+
+  local flavor
+  for flavor in "${flavors[@]}"; do
+    if printf '%s\n' "$installed" | grep -qF "$flavor"; then
+      echo "Yazi flavor already added: $flavor"
+    else
+      echo "Adding Yazi flavor: $flavor"
+      ya pkg add "$flavor"
+    fi
+  done
+
+  # Restores anything recorded in package.toml but missing on disk,
+  # e.g. on a fresh machine where only package.toml was checked out.
+  ya pkg install
+
+  # 'ya pkg add/install' reports success even when a package does not exist,
+  # deploying nothing; verify the flavors theme.toml references really landed.
+  local missing=()
+  for flavor in "${flavors[@]}"; do
+    local dir="$ROOT_DIR/terminal/yazi/flavors/${flavor##*/}.yazi"
+    if [ ! -f "$dir/flavor.toml" ]; then
+      missing+=("$flavor")
+    fi
+  done
+
+  if [ "${#missing[@]}" -gt 0 ]; then
+    echo "Error: Yazi flavors failed to install: ${missing[*]}"
+    echo "Expected flavor.toml under $ROOT_DIR/terminal/yazi/flavors/"
+    exit 1
+  fi
+
+  echo "Yazi flavors installed: ${flavors[*]}"
 }
 
 link_dotfile() {
@@ -153,9 +209,12 @@ else
   link_dotfile "$ROOT_DIR/terminal/ghostty" "$HOME/.config/ghostty" "ghostty"
 fi
 link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
+link_dotfile "$ROOT_DIR/terminal/yazi" "$HOME/.config/yazi" "yazi"
+link_dotfile "$ROOT_DIR/terminal/kitty" "$HOME/.config/kitty" "kitty"
 
 install_macos_deps
 install_tpm
+install_yazi_flavors
 
 if has_cmd nvim; then
   echo "Bootstrapping Neovim plugins and Mason tools..."

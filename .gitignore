@@ -6,3 +6,7 @@
 # Editor/IDE
 .idea/
 .vscode/
+
+# Yazi packages: restored from terminal/yazi/package.toml via 'ya pkg install'
+terminal/yazi/flavors/
+terminal/yazi/plugins/
