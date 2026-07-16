@@ -65,4 +65,6 @@ else
 	fi
 fi
 
-pill "$surface" "$accent" "$icon ${pct}%"
+# 3 columns, for the same reason as sys.sh: a pill that changes width drags the
+# centred window list with it.
+pill "$surface" "$accent" "$(printf '%s %3d%%' "$icon" "$pct")"

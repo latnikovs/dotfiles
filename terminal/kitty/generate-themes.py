@@ -27,6 +27,11 @@ def dim_but_legible(bg, candidates, floor=3.0):
         max(candidates, key=lambda c: contrast(bg, c))
 
 
+def most_legible(bg, candidates):
+    """Candidate with the highest contrast against bg."""
+    return max(candidates, key=lambda c: contrast(bg, c))
+
+
 SCALAR = {
     "background": "background",
     "foreground": "foreground",
@@ -76,20 +81,29 @@ def convert(src, name):
     # Dimmest palette colour that stays readable on this background: slot 8
     # suits light themes, but on dark ones it drops to ~2:1 contrast.
     inactive = dim_but_legible(bg, [palette[8], palette[7], colors["foreground"]])
-    out.append("# Tab bar, derived from this palette (blue accent matches the")
-    out.append("# active tmux pane border). inactive_tab_foreground is chosen by")
-    out.append(f"# contrast against the background: {contrast(bg, inactive):.1f}:1.")
-    out.append(f"{'active_tab_background':<26} {palette[4]}")
-    out.append(f"{'active_tab_foreground':<26} {bg}")
+    # The accent cannot be background-coloured text in every flavor: the
+    # magenta slot is dark in Latte but light in Macchiato, so a hardcoded
+    # foreground fails WCAG in one of them. Pick it by contrast instead.
+    accent = palette[5]
+    active_fg = most_legible(accent, [bg, colors["foreground"]])
+    out.append("# Tab bar, derived from this palette. The accent is the magenta")
+    out.append("# slot (Catppuccin pink): blue and green already mean 'active tmux")
+    out.append("# pane' and 'tmux session', so a kitty tab — the outermost")
+    out.append("# container — gets a colour of its own rather than overloading one.")
+    out.append("# Both tab foregrounds are chosen by contrast:")
+    out.append(f"# active {contrast(accent, active_fg):.1f}:1, "
+               f"inactive {contrast(bg, inactive):.1f}:1.")
+    out.append(f"{'active_tab_background':<26} {accent}")
+    out.append(f"{'active_tab_foreground':<26} {active_fg}")
     out.append(f"{'inactive_tab_background':<26} {bg}")
     out.append(f"{'inactive_tab_foreground':<26} {inactive}")
     out.append(f"{'tab_bar_background':<26} {bg}")
     out.append("")
 
-    # Active tab text sits on palette[4]; make sure that pairing is readable too.
-    ratio = contrast(palette[4], bg)
+    # Active tab text sits on the accent; make sure that pairing is readable too.
+    ratio = contrast(accent, active_fg)
     if ratio < 3.0:
-        print(f"WARNING: {name}: active tab {bg} on {palette[4]} is only "
+        print(f"WARNING: {name}: active tab {active_fg} on {accent} is only "
               f"{ratio:.1f}:1", file=sys.stderr)
     return "\n".join(out)
 

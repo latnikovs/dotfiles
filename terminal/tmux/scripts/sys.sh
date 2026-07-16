@@ -46,16 +46,19 @@ case "$(uname -s)" in
 		;;
 esac
 
+# Right-aligned in 3 columns so the pill is the same width at 8%, 80% and
+# 100%. These values change every interval, and status-justify is 'centre': a
+# pill that grows by a column shoves the whole window list sideways.
 out=''
 if [ -n "$cpu" ]; then
 	accent="$cpu_accent"
 	[ "$cpu" -ge 80 ] && accent="$busy"
-	out+="$(pill "$surface" "$accent" "${ICO_CPU} ${cpu}%") "
+	out+="$(pill "$surface" "$accent" "$(printf '%s %3d%%' "$ICO_CPU" "$cpu")") "
 fi
 if [ -n "$mem" ]; then
 	accent="$mem_accent"
 	[ "$mem" -ge 90 ] && accent="$busy"
-	out+="$(pill "$surface" "$accent" "${ICO_MEM} ${mem}%")"
+	out+="$(pill "$surface" "$accent" "$(printf '%s %3d%%' "$ICO_MEM" "$mem")")"
 fi
 
 printf '%s' "$out"
