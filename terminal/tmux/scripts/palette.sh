@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Publishes the pill colors as @acc_* / @pill_* options, per flavor.
+# Publishes the bar's pill colors as tmux options, derived per flavor.
 #
 # Why the two flavors cannot share one rule:
 #
@@ -21,8 +21,10 @@
 # numbers pass, but seven saturated chips in a row is a lot of bar.
 #
 # The two pills that are emphasis rather than information — the session and the
-# active window — stay filled in both flavors, and get @acc_* (darkened against
-# the background, since near-white text sits on them) rather than @icon_*.
+# active window — keep a colour of their own so they still read as identity
+# against a row of grey info pills. On dark that is the accent, filled. On light
+# a filled accent shouts next to the quiet pills, so it becomes a badge instead:
+# a pale wash of the accent carrying dark accent text.
 #
 # All of it is measured, not tabulated: the ratios come out of the same WCAG
 # formula terminal/kitty/generate-themes.py uses, so a Catppuccin palette change
@@ -30,9 +32,9 @@
 #
 # Published options. Each is already the right colour for the current flavor, so
 # nothing downstream branches on it:
-#   @acc_<name>   accent for a FILLED pill (session, active window), darkened on
-#                 Latte so @pill_fg can sit on it.
-#   @pill_fg      text colour for a filled pill: crust on dark, base on light.
+#   @badge_<name>     fill for an emphasis pill (session, active window): the
+#   @badge_fg_<name>  accent itself on dark, a pale wash of it on light — with
+#                     crust and dark accent text respectively.
 #   @fill_<name>  the surface a normal pill is drawn on.
 #   @icon_<name>  colour for that pill's icon: the raw accent on dark, minimally
 #                 darkened to 3:1 on light.
@@ -60,14 +62,17 @@ crust="$(tmux show -gqv @thm_crust 2>/dev/null)"
 fg="$(tmux show -gqv @thm_fg 2>/dev/null)"
 
 if [ "$flavor" = latte ]; then
-	tmux set -g @pill_fg "$base"
 	# Labels go neutral; only icons stay accented.
 	tmux set -g @pill_text "$fg"
 else
-	tmux set -g @pill_fg "$crust"
 	# Empty: the label keeps taking the accent, which is the dark look.
 	tmux set -g @pill_text ""
 fi
+
+# How much accent a light badge's wash carries. Low enough to stay a wash rather
+# than a chip; the text on it is re-derived either way, so this is taste, not
+# contrast.
+BADGE_TINT=0.18
 
 # hex_rgb <#rrggbb> — prints 'r g b' as decimals. The hex parsing is done here
 # rather than in awk because awk's strtonum() is a gawk extension and macOS
@@ -75,6 +80,21 @@ fi
 hex_rgb() {
 	local h="${1#\#}"
 	printf '%d %d %d' "$((16#${h:0:2}))" "$((16#${h:2:2}))" "$((16#${h:4:2}))"
+}
+
+# blend <fg> <bg> <alpha> — <alpha> of <fg> laid over <bg>.
+blend() {
+	local xr xg xb yr yg yb
+	read -r xr xg xb <<<"$(hex_rgb "$1")"
+	read -r yr yg yb <<<"$(hex_rgb "$2")"
+	awk -v xr="$xr" -v xg="$xg" -v xb="$xb" \
+		-v yr="$yr" -v yg="$yg" -v yb="$yb" -v a="$3" '
+		BEGIN {
+			printf "#%02x%02x%02x", \
+				int(xr * a + yr * (1 - a)), \
+				int(xg * a + yg * (1 - a)), \
+				int(xb * a + yb * (1 - a))
+		}'
 }
 
 # darken_to <hex> <against> <target> — scale the colour down until it reaches
@@ -128,12 +148,16 @@ for name in "${ACCENTS[@]}"; do
 		# keeps its hue. The label is neutral and already at 5.2:1.
 		tmux set -g "@icon_$name" "$(darken_to "$value" "$surface" 3.0)"
 		tmux set -g "@text_$name" "$fg"
-		# Filled pills carry near-white text, so those need the full 4.5:1
-		# against the background instead.
-		tmux set -g "@acc_$name" "$(darken_to "$value" "$base" 4.5)"
+
+		# Badge: a wash of the accent, with the accent itself darkened until it
+		# reads on that wash.
+		wash="$(blend "$value" "$base" "$BADGE_TINT")"
+		tmux set -g "@badge_$name" "$wash"
+		tmux set -g "@badge_fg_$name" "$(darken_to "$value" "$wash" 4.5)"
 	else
 		tmux set -g "@icon_$name" "$value"
 		tmux set -g "@text_$name" "$value"
-		tmux set -g "@acc_$name" "$value"
+		tmux set -g "@badge_$name" "$value"
+		tmux set -g "@badge_fg_$name" "$crust"
 	fi
 done
