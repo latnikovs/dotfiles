@@ -48,7 +48,7 @@ set -u
 
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-ACCENTS=(green sapphire mauve peach teal yellow red lavender blue)
+ACCENTS=(green sapphire mauve peach teal yellow red lavender blue sky)
 
 flavor="$("$dir/flavor.sh")"
 # The plugin names these @thm_bg / @thm_fg, not the @thm_base / @thm_text the

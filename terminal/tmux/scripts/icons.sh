@@ -18,6 +18,7 @@ tmux set -g @ico_session $'\U000f018d'  # md-console
 tmux set -g @ico_prefix $'\U000f030c'   # md-keyboard
 tmux set -g @ico_zoom $'\U000f0293'     # md-fullscreen
 tmux set -g @ico_clock $'\U000f0150'    # md-clock
+tmux set -g @ico_date $'\U000f00ed'     # md-calendar
 
 # Window icons, keyed off #{pane_current_command} by the @win_icon map.
 tmux set -g @ico_vim $'\U000f085e'      # md-vim
