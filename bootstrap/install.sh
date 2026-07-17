@@ -136,6 +136,30 @@ install_yazi_flavors() {
   echo "Yazi flavors installed: ${flavors[*]}"
 }
 
+# Copy once and never touch again, for configs the app itself rewrites. A
+# symlink into the repo would mean the app dirties the working tree just by
+# being used, so these get seeded and then belong to the machine.
+seed_dotfile() {
+  local src="$1"
+  local dest="$2"
+  local label="$3"
+
+  if [ ! -e "$src" ]; then
+    echo "Error: $label template not found at $src"
+    exit 1
+  fi
+
+  if [ -e "$dest" ] || [ -L "$dest" ]; then
+    echo "$label already present, leaving it alone: $dest"
+    return
+  fi
+
+  mkdir -p "$(dirname "$dest")"
+  cp "$src" "$dest"
+  echo "Seeded $label:"
+  echo "  $dest (from $src)"
+}
+
 link_dotfile() {
   local src="$1"
   local dest="$2"
@@ -198,7 +222,17 @@ link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 link_dotfile "$ROOT_DIR/terminal/tmux/scripts" "$HOME/.tmux/scripts" "tmux status scripts"
 link_dotfile "$ROOT_DIR/terminal/yazi" "$HOME/.config/yazi" "yazi"
 link_dotfile "$ROOT_DIR/terminal/kitty" "$HOME/.config/kitty" "kitty"
-link_dotfile "$ROOT_DIR/terminal/btop" "$HOME/.config/btop" "btop"
+
+# btop persists its own settings: change a box or a sort in the TUI and it
+# rewrites btop.conf on exit. So the live config is seeded rather than linked —
+# linking it would mean merely using btop leaves the repo dirty. Only the pieces
+# btop never writes to are symlinked. Edit btop.conf.default to change what a
+# fresh machine starts with; an existing btop.conf is deliberately never
+# overwritten.
+seed_dotfile "$ROOT_DIR/terminal/btop/btop.conf.default" "$HOME/.config/btop/btop.conf" "btop config"
+link_dotfile "$ROOT_DIR/terminal/btop/themes-latte" "$HOME/.config/btop/themes-latte" "btop latte theme"
+link_dotfile "$ROOT_DIR/terminal/btop/themes-macchiato" "$HOME/.config/btop/themes-macchiato" "btop macchiato theme"
+link_dotfile "$ROOT_DIR/terminal/btop/launch.sh" "$HOME/.config/btop/launch.sh" "btop launcher"
 
 install_macos_deps
 install_tpm
