@@ -53,12 +53,12 @@ out=''
 if [ -n "$cpu" ]; then
 	accent="$cpu_accent"
 	[ "$cpu" -ge 80 ] && accent="$busy"
-	out+="$(pill "$surface" "$accent" "$(printf '%s %3d%%' "$ICO_CPU" "$cpu")") "
+	out+="$(pill "$surface" "$accent" "$ICO_CPU" "$(printf '%3d%%' "$cpu")") "
 fi
 if [ -n "$mem" ]; then
 	accent="$mem_accent"
 	[ "$mem" -ge 90 ] && accent="$busy"
-	out+="$(pill "$surface" "$accent" "$(printf '%s %3d%%' "$ICO_MEM" "$mem")")"
+	out+="$(pill "$surface" "$accent" "$ICO_MEM" "$(printf '%3d%%' "$mem")")"
 fi
 
 printf '%s' "$out"

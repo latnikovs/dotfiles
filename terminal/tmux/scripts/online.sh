@@ -39,7 +39,8 @@ else
 fi
 
 if [ "$state" = up ]; then
+	# Icon only: online is the boring case and does not need a word for it.
 	pill "$surface" "$online" "$ICO_WIFI"
 else
-	pill "$surface" "$offline" "$ICO_WIFI_OFF offline"
+	pill "$surface" "$offline" "$ICO_WIFI_OFF" "offline"
 fi

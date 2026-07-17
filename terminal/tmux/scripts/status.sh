@@ -31,6 +31,12 @@ yellow="${7:?yellow required}"
 red="${8:?red required}"
 teal="${9:?teal required}"
 
+# What pill() colours a label with, or empty to mean 'use the accent'. Decided
+# per flavor by palette.sh, and exported rather than threaded through every
+# module's argument list: it is the same answer for every pill on the bar, and
+# the modules never need to reason about it.
+export PILL_TEXT="${10:-}"
+
 out=''
 append() {
 	local text

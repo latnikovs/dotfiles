@@ -34,11 +34,22 @@ esc() {
 	printf '%s' "${1//#/##}"
 }
 
-# pill <surface> <accent> <text>
+# pill <surface> <accent> <icon> [label]
 # Rounded pill: caps drawn in the surface color over the terminal background,
-# text in the accent color over the surface fill.
+# icon in the accent, label in PILL_TEXT (or the accent when PILL_TEXT is empty).
+#
+# The icon and label are separate arguments because the two flavors colour them
+# differently. On dark both take the accent — bright pastel on #363a4f, 5-8:1.
+# On light the accent cannot carry text at any readable ratio, so the label goes
+# neutral and only the icon stays accented. palette.sh decides which, and
+# status.sh exports it; see palette.sh for why.
+#
+# Pass label empty for an icon-only pill.
 pill() {
-	local surface="$1" accent="$2" text="$3"
-	printf '#[fg=%s,bg=default]%s#[fg=%s,bg=%s,bold] %s #[fg=%s,bg=default,nobold]%s' \
-		"$surface" "$CAP_L" "$accent" "$surface" "$text" "$surface" "$CAP_R"
+	local surface="$1" accent="$2" icon="$3" label="${4:-}"
+	local text_fg="${PILL_TEXT:-$accent}"
+	printf '#[fg=%s,bg=default]%s#[bg=%s,bold]#[fg=%s]%s' \
+		"$surface" "$CAP_L" "$surface" "$accent" " $icon"
+	[ -n "$label" ] && printf '#[fg=%s]%s' "$text_fg" " $label"
+	printf ' #[fg=%s,bg=default,nobold]%s' "$surface" "$CAP_R"
 }
