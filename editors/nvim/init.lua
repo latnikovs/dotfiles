@@ -126,6 +126,7 @@ vim.filetype.add({
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("i", "jj", "<Esc>")
 vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "[W]rite file" })
+vim.keymap.set("n", "<leader>Q", "<cmd>qa<CR>", { desc = "[Q]uit all" })
 vim.keymap.set("v", ">", ">gv", { desc = "Indent right and keep selection" })
 vim.keymap.set("v", "<", "<gv", { desc = "Indent left and keep selection" })
 
