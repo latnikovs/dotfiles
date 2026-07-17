@@ -19,7 +19,7 @@ install_macos_deps() {
   fi
 
   # lazygit: tmux.conf binds it to prefix+g as a popup.
-  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit)
+  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop)
   local missing=()
   local pkg
 
@@ -198,6 +198,7 @@ link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 link_dotfile "$ROOT_DIR/terminal/tmux/scripts" "$HOME/.tmux/scripts" "tmux status scripts"
 link_dotfile "$ROOT_DIR/terminal/yazi" "$HOME/.config/yazi" "yazi"
 link_dotfile "$ROOT_DIR/terminal/kitty" "$HOME/.config/kitty" "kitty"
+link_dotfile "$ROOT_DIR/terminal/btop" "$HOME/.config/btop" "btop"
 
 install_macos_deps
 install_tpm
