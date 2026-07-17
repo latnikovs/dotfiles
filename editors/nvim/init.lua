@@ -1154,6 +1154,10 @@ require("lazy").setup({
 		config = function()
 			require("catppuccin").setup({
 				flavour = "macchiato",
+				-- Let the terminal's background_opacity through. The colorscheme
+				-- would otherwise paint every cell with an explicit background,
+				-- and kitty only makes the *default* background translucent.
+				transparent_background = true,
 				integrations = {
 					gitsigns = true,
 					treesitter = true,
@@ -1172,7 +1176,9 @@ require("lazy").setup({
 		config = function()
 			require("github-theme").setup({
 				options = {
-					transparent = false,
+					-- Matches catppuccin's transparent_background above, so the
+					-- terminal shows through on both sides of <leader>tt.
+					transparent = true,
 				},
 			})
 		end,
