@@ -19,7 +19,7 @@ install_macos_deps() {
   fi
 
   # lazygit: tmux.conf binds it to prefix+g as a popup.
-  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop)
+  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide)
   local missing=()
   local pkg
 
