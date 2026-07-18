@@ -109,11 +109,13 @@ def convert(src, name):
     out.append("# Both tab foregrounds are chosen by contrast:")
     out.append(f"# active {contrast(accent, active_fg):.1f}:1, "
                f"inactive {contrast(bg, inactive):.1f}:1.")
+    out.append("# tab_bar_background is deliberately not set here: kitty.conf leaves")
+    out.append("# it 'none' so the bar stays translucent and seamless with the tmux")
+    out.append("# status bar below, which draws on the same window background.")
     out.append(f"{'active_tab_background':<26} {accent}")
     out.append(f"{'active_tab_foreground':<26} {active_fg}")
     out.append(f"{'inactive_tab_background':<26} {bg}")
     out.append(f"{'inactive_tab_foreground':<26} {inactive}")
-    out.append(f"{'tab_bar_background':<26} {bg}")
     out.append("")
 
     # Active tab text sits on the accent; make sure that pairing is readable too.
