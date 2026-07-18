@@ -226,12 +226,33 @@ vim.keymap.set("n", "<leader>ls", vim.lsp.buf.document_symbol, { desc = "Open [L
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
--- Open a terminal in a full-width split at the bottom, ready to type in
+-- Toggle a single reusable terminal in a full-width split at the bottom.
+-- Pressing the key hides the window if it's open and reuses the same
+-- terminal buffer when reopening, so it never spawns orphaned terminals.
+local term = { buf = nil, win = nil }
 vim.keymap.set("n", "<leader>ot", function()
-	vim.cmd("botright split | terminal")
+	-- If the terminal window is open, hide it.
+	if term.win and vim.api.nvim_win_is_valid(term.win) then
+		vim.api.nvim_win_hide(term.win)
+		term.win = nil
+		return
+	end
+
+	-- Open a full-width bottom split.
+	vim.cmd("botright split")
 	vim.cmd("resize 15")
+	term.win = vim.api.nvim_get_current_win()
+
+	-- Reuse the existing terminal buffer, or create one on first use.
+	if term.buf and vim.api.nvim_buf_is_valid(term.buf) then
+		vim.api.nvim_win_set_buf(term.win, term.buf)
+	else
+		vim.cmd("terminal")
+		term.buf = vim.api.nvim_get_current_buf()
+	end
+
 	vim.cmd("startinsert")
-end, { desc = "[O]pen [T]erminal split" })
+end, { desc = "[O]pen [T]erminal (toggle)" })
 
 -- TIP: Disable arrow keys in normal mode
 vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
