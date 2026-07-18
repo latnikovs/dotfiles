@@ -19,7 +19,8 @@ install_macos_deps() {
   fi
 
   # lazygit: tmux.conf binds it to prefix+g as a popup.
-  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide)
+  # git-delta: installs the 'delta' binary; wired into git via configure_delta.
+  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide git-delta)
   local missing=()
   local pkg
 
@@ -85,6 +86,29 @@ install_tpm() {
 
   echo "Installing TPM to $tpm_dir"
   git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
+}
+
+# Wire delta into git's global config. This writes ~/.gitconfig (a machine-owned
+# file this repo does not track), so it is imperative rather than symlinked.
+# delta.light is deliberately left unset so delta auto-detects light/dark from
+# the terminal background, matching the latte/macchiato switching used elsewhere.
+configure_delta() {
+  if ! has_cmd git; then
+    echo "Skipping delta git config: 'git' is not installed"
+    return
+  fi
+
+  if ! has_cmd delta; then
+    echo "Skipping delta git config: 'delta' is not installed"
+    return
+  fi
+
+  echo "Configuring git to use delta"
+  git config --global core.pager delta
+  git config --global interactive.diffFilter "delta --color-only"
+  git config --global delta.navigate true
+  git config --global merge.conflictStyle zdiff3
+  git config --global diff.colorMoved default
 }
 
 install_yazi_flavors() {
@@ -236,6 +260,7 @@ link_dotfile "$ROOT_DIR/terminal/btop/launch.sh" "$HOME/.config/btop/launch.sh" 
 
 install_macos_deps
 install_tpm
+configure_delta
 install_yazi_flavors
 
 if has_cmd nvim; then
