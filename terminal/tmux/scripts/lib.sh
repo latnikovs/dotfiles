@@ -44,12 +44,22 @@ esc() {
 # neutral and only the icon stays accented. palette.sh decides which, and
 # status.sh exports it; see palette.sh for why.
 #
+# Spacing is the caller's job. This draws CAP_L, the icon flush against it, the
+# label verbatim, then CAP_R flush against the label — no spaces of its own. The
+# MD glyphs (cpu, memory, battery, branch, wifi) carry their own left-side
+# bearing, so an injected leading space made them float away from the cap; and
+# with spacing here every pill was forced to the same left/right padding. Now
+# each module decides: the numeric pills right-align their value with '%3d%%'
+# (see sys.sh), so it sits one column off the icon and tight against the right
+# cap; the text pills (git, offline) pad their own label so words don't touch
+# the caps.
+#
 # Pass label empty for an icon-only pill.
 pill() {
 	local surface="$1" accent="$2" icon="$3" label="${4:-}"
 	local text_fg="${PILL_TEXT:-$accent}"
 	printf '#[fg=%s,bg=default]%s#[bg=%s,bold]#[fg=%s]%s' \
-		"$surface" "$CAP_L" "$surface" "$accent" " $icon"
-	[ -n "$label" ] && printf '#[fg=%s]%s' "$text_fg" " $label"
-	printf ' #[fg=%s,bg=default,nobold]%s' "$surface" "$CAP_R"
+		"$surface" "$CAP_L" "$surface" "$accent" "$icon"
+	[ -n "$label" ] && printf '#[fg=%s]%s' "$text_fg" "$label"
+	printf '#[fg=%s,bg=default,nobold]%s' "$surface" "$CAP_R"
 }

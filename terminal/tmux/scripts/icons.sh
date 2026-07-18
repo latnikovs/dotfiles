@@ -31,4 +31,5 @@ tmux set -g @ico_ssh $'\U000f0318'      # md-lan-connect
 tmux set -g @ico_folder $'\U000f024b'   # md-folder
 tmux set -g @ico_java $'\U000f0176'     # md-coffee
 tmux set -g @ico_shell $'\U000f018d'    # md-console
+tmux set -g @ico_claude $'\U000f06a9'   # md-robot
 tmux set -g @ico_default $'\U000f0349'  # md-magnify

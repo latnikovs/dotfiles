@@ -39,8 +39,9 @@ else
 fi
 
 if [ "$state" = up ]; then
-	# Icon only: online is the boring case and does not need a word for it.
+	# Icon only: online is the boring case and does not need a word for it. No
+	# label, so the glyph sits tight between both caps.
 	pill "$surface" "$online" "$ICO_WIFI"
 else
-	pill "$surface" "$offline" "$ICO_WIFI_OFF" "offline"
+	pill "$surface" "$offline" "$ICO_WIFI_OFF" " offline"
 fi

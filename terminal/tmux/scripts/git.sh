@@ -59,4 +59,6 @@ accent="$clean"
 
 [ "${#branch}" -gt "$maxlen" ] && branch="${branch:0:maxlen-1}…"
 
-pill "$surface" "$accent" "$ICO_BRANCH" "$(esc "$branch")${dirty_marks}${sync_marks}"
+# pill() adds no spacing of its own: one column off the icon, tight against the
+# right cap — same as the numeric pills. dirty_marks/sync_marks lead with spaces.
+pill "$surface" "$accent" "$ICO_BRANCH" " $(esc "$branch")${dirty_marks}${sync_marks}"
