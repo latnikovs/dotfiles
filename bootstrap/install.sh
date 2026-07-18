@@ -119,6 +119,24 @@ configure_delta() {
   git config --global diff.colorMoved default
 }
 
+# Point git at the repo's tracked hooks (the pre-commit lint gate) via
+# core.hooksPath, so the hook lives in the repo instead of an untracked
+# .git/hooks copy. Local config only — it must not leak into other repos.
+configure_git_hooks() {
+  if ! has_cmd git; then
+    echo "Skipping git hooks: 'git' is not installed"
+    return
+  fi
+
+  if ! git -C "$ROOT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Skipping git hooks: $ROOT_DIR is not a git checkout"
+    return
+  fi
+
+  git -C "$ROOT_DIR" config --local core.hooksPath "$ROOT_DIR/hooks"
+  echo "Git hooks enabled: core.hooksPath -> $ROOT_DIR/hooks"
+}
+
 install_yazi_flavors() {
   local flavors=(956MB/vscode-dark-modern 956MB/vscode-light-modern)
 
@@ -284,6 +302,7 @@ link_dotfile "$ROOT_DIR/terminal/btop/launch.sh" "$HOME/.config/btop/launch.sh" 
 install_macos_deps
 install_tpm
 configure_delta
+configure_git_hooks
 install_yazi_flavors
 
 if has_cmd nvim; then
