@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Pre-commit gate: lint staged shell scripts before they can land. This repo
+# pushes straight to its trunk with no PR/CI gate, so this hook is the "run the
+# linter" definition of done, enforced locally at commit time.
+#
+# Only STAGED shell files are checked — for speed, and so a commit is never
+# blocked by pre-existing findings in a file it does not touch. Bypass with
+# `git commit --no-verify` when you genuinely must.
+#
+# Wired via core.hooksPath (set by bootstrap/install.sh) rather than copied into
+# .git/hooks, so the hook lives in the repo and travels with it.
+set -euo pipefail
+
+fail=0
+
+# bash/POSIX scripts: parse check, then shellcheck if available.
+check_sh() {
+	bash -n "$1" || return 1
+	if command -v shellcheck >/dev/null 2>&1; then
+		shellcheck "$1" || return 1
+	fi
+}
+
+# zsh scripts: shellcheck has no zsh support, so use zsh's own parse check.
+check_zsh() {
+	command -v zsh >/dev/null 2>&1 || return 0
+	zsh -n "$1"
+}
+
+while IFS= read -r file; do
+	[ -f "$file" ] || continue
+	case "$file" in
+		shell/zshrc) check_zsh "$file" || fail=1 ;;
+		*.sh) check_sh "$file" || fail=1 ;;
+		*)
+			# Extension-less files with a bash/sh shebang (e.g. this hook).
+			if head -n1 "$file" | grep -qE '^#!.*/(env +)?(bash|sh)\b'; then
+				check_sh "$file" || fail=1
+			fi
+			;;
+	esac
+done < <(git diff --cached --name-only --diff-filter=ACM)
+
+if [ "$fail" -ne 0 ]; then
+	echo "pre-commit: shell lint failed — fix the issues above, or bypass with 'git commit --no-verify'." >&2
+	exit 1
+fi

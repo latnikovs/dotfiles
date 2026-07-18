@@ -1,40 +1,97 @@
 # dotfiles
 
-Personal dotfiles for a macOS/Linux development environment.
+Personal macOS development environment — Neovim, kitty, tmux, yazi, aerospace,
+lazygit and delta, themed with Catppuccin that follows the system light/dark
+appearance. Linux is partially supported: the shell, editors and terminal
+configs work, but the Homebrew casks and a few paths are macOS-only.
 
-## What is managed
+## Design principles
 
-- IntelliJ IdeaVim: `~/.ideavimrc`
-- Neovim: `~/.config/nvim`
-- kitty: `~/.config/kitty`
-- tmux: `~/.tmux.conf`, status bar modules in `~/.tmux/scripts`
-- Yazi: `~/.config/yazi`
-- Zsh: `~/.zshrc` (shared; sources an untracked `~/.zshrc.local` for per-machine tweaks)
+- **One appearance, everywhere.** kitty, tmux, btop, delta and yazi all resolve
+  light vs. dark from a single source of truth — the macOS appearance, read by
+  `terminal/tmux/scripts/flavor.sh`. Catppuccin Latte in light mode, Macchiato
+  in dark, in lockstep. Nothing themes itself independently.
+- **Link vs. seed.** Configs an app never rewrites are **symlinked**, so edits
+  flow both ways. Configs an app rewrites itself — `btop.conf`,
+  `karabiner.json` — are **seeded** once and then left alone, so merely using
+  the app never dirties the repo.
+- **Machine-local escape hatch.** The shared `~/.zshrc` sources an untracked
+  `~/.zshrc.local` for per-host paths, tooling and secrets. Nothing
+  machine-specific is committed.
+- **Idempotent bootstrap.** `install.sh` is safe to re-run: it skips work
+  already done and backs up any real file it is about to replace to `*.bak`.
 
-## Installation
+## Quick start
 
 ```bash
-./bootstrap/install.sh
+git clone <this-repo> ~/dotfiles
+~/dotfiles/bootstrap/install.sh
 ```
 
-The installer creates these symlinks:
+Prerequisites: macOS with [Homebrew](https://brew.sh) and git. The bootstrap
+installs everything else — packages, casks, the Nerd Font, and tmux/Neovim
+plugins. Re-run it any time; it is idempotent.
 
-- `~/.ideavimrc` -> `editors/intellij/ideavimrc`
-- `~/.config/nvim` -> `editors/nvim`
-- `~/.config/kitty` -> `terminal/kitty`
-- `~/.tmux.conf` -> `terminal/tmux/tmux.conf`
-- `~/.tmux/scripts` -> `terminal/tmux/scripts`
-- `~/.config/yazi` -> `terminal/yazi`
-- `~/.zshrc` -> `shell/zshrc`
-- macOS only: `~/.aerospace.toml` -> `aerospace/aerospace.toml`,
-  `~/.config/karabiner/karabiner.json` -> `karabiner/karabiner.json`
+## What's managed
 
-If a target already exists and is not a symlink, it is moved to a `.bak` file before linking.
+| Tool | Source | Target | Method |
+| --- | --- | --- | --- |
+| Neovim | `editors/nvim` | `~/.config/nvim` | link |
+| IdeaVim | `editors/intellij/ideavimrc` | `~/.ideavimrc` | link |
+| Zsh | `shell/zshrc` | `~/.zshrc` | link (+ `~/.zshrc.local`) |
+| kitty | `terminal/kitty` | `~/.config/kitty` | link |
+| tmux | `terminal/tmux/tmux.conf`, `…/scripts` | `~/.tmux.conf`, `~/.tmux/scripts` | link |
+| yazi | `terminal/yazi` | `~/.config/yazi` | link |
+| btop | `terminal/btop` | `~/.config/btop` | seed config, link themes + launcher |
+| delta | `terminal/delta/delta.sh` | `~/.config/delta/delta.sh` | link |
+| lazygit | `terminal/lazygit/config.yml` | `~/Library/Application Support/lazygit/config.yml` | link (macOS) |
+| aerospace | `aerospace/aerospace.toml` | `~/.aerospace.toml` | link (macOS) |
+| karabiner | `karabiner/karabiner.json` | `~/.config/karabiner/karabiner.json` | seed (macOS) |
 
-Machine-specific shell settings (work paths, per-host tooling, secrets) go in
-`~/.zshrc.local`, which the shared `~/.zshrc` sources at the end. That file is
-never tracked here, so each machine keeps its own; a machine that already has one
-is left untouched.
+Git config is not symlinked — the bootstrap sets delta-related keys directly in
+`~/.gitconfig` (see [git + delta](#git--delta)). If a link target already exists
+and is not the expected symlink, it is moved to `*.bak` first.
+
+## Packages
+
+`install.sh` installs, via Homebrew:
+
+- **Formulae:** `neovim`, `ripgrep`, `fd`, `node`, `tmux`, `tree-sitter-cli`,
+  `gopass`, `yazi`, `lazygit`, `btop`, `zoxide`, `git-delta`, `direnv`, `fzf`,
+  `zsh-autosuggestions`
+- **Casks:** `font-jetbrains-mono-nerd-font`, `kitty`, `aerospace`,
+  `karabiner-elements`
+
+## git + delta
+
+delta is the pager for both CLI git and lazygit. delta only auto-detects
+light/dark when writing to a TTY, and fails in a pipe (notably lazygit's diff
+pane), so a small wrapper — `terminal/delta/delta.sh` — forces `--light` /
+`--dark` from the same `flavor.sh` probe kitty and btop use. The bootstrap
+points `core.pager`, `interactive.diffFilter` and lazygit's pager at that
+wrapper, and sets `navigate`, `zdiff3` conflicts and `colorMoved`.
+
+## Shell
+
+`~/.zshrc` is shared and tracked. Anything that differs per machine — work
+paths, tool-managed blocks (Rancher Desktop), secrets — goes in
+`~/.zshrc.local`, which is sourced at the end (before zoxide, so its PATH
+additions are part of the final PATH) and never tracked. Homebrew paths resolve
+through a detected `$BREW_PREFIX`, so the file works on both Apple Silicon and
+Intel.
+
+> **Caveat:** `~/.zshrc` is a symlink into this repo, so an installer that
+> appends to `~/.zshrc` (Rancher Desktop, SDKMAN, rustup…) writes *through* it
+> and dirties the repo. When that happens, move the injected block into
+> `~/.zshrc.local` and `git checkout shell/zshrc`.
+
+## Development
+
+`install.sh` enables a git `pre-commit` hook via `core.hooksPath` → `hooks/`.
+It lints **staged** shell scripts before they can be committed — `shellcheck` +
+`bash -n` for POSIX/bash, `zsh -n` for `shell/zshrc` — and blocks the commit on
+failure. Only staged files are checked, so unrelated pre-existing findings never
+block you. Bypass with `git commit --no-verify` when you must.
 
 ## kitty
 
@@ -212,6 +269,9 @@ the `run '~/.tmux/plugins/tpm/tpm'` line has to stay last in `tmux.conf`.
 - `python3`
 - `java` (JDK 21+)
 - C build toolchain (`xcode-select --install` on macOS)
+
+The bootstrap installs the Homebrew-provided ones and syncs plugins/Mason tools
+automatically; the steps below are the manual equivalent.
 
 ### Bootstrap plugins and tools
 
