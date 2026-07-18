@@ -1,0 +1,167 @@
+# Keep PATH free of duplicates. Every `export PATH="...:$PATH"` below prepends
+# unconditionally, so a nested interactive shell — which is what every tmux pane
+# starts — stacked another copy of each entry every time. `path` is zsh's array
+# view of PATH; marking it unique dedupes both, keeping the first occurrence, so
+# precedence is unchanged. Must come before anything touches PATH.
+typeset -U path PATH
+
+# Homebrew's prefix differs by architecture: /opt/homebrew on Apple Silicon,
+# /usr/local on Intel. Detect it once so the paths below work on either. This
+# file sets PATH by hand rather than via `brew shellenv` (see the completion
+# note below), so nothing else defines this for us.
+[[ -d /opt/homebrew ]] && BREW_PREFIX=/opt/homebrew || BREW_PREFIX=/usr/local
+
+##### Completion #####
+# Must come before anything that runs compinit, because compinit only sees the
+# fpath as it stands when it runs — adding to fpath afterwards does nothing.
+#
+# Homebrew installs its completions here (_brew, _gh, _fd, _aerospace, ...), but
+# only `eval "$(brew shellenv)"` puts the directory on fpath, and this file sets
+# PATH by hand instead. So they were on disk and invisible.
+typeset -U fpath
+fpath=($BREW_PREFIX/share/zsh/site-functions $fpath)
+
+# compinit, explicitly. SDKMAN's init runs it too, guarded on compdef not
+# already existing — so running it here first means SDKMAN skips it, and
+# completion no longer depends on SDKMAN being installed to work at all.
+# -d names the dump cache; -i skips the insecure-directory prompt Homebrew's
+# group-writable dirs would otherwise trigger on every shell.
+autoload -Uz compinit
+compinit -i -d "${XDG_CACHE_HOME:-$HOME/.cache}/zcompdump-${ZSH_VERSION}"
+
+# Case-insensitive, then partial-word, then substring completion. no_case_glob
+# below does NOT do this — it governs globbing, not completion.
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+# Colour the completion menu like ls, and describe option groups.
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%F{yellow}%d%f'
+
+# SDKMAN (Java/Kotlin version manager). The source is guarded, so a machine
+# without SDKMAN installed is a no-op. compinit already ran above, so SDKMAN's
+# own compinit is skipped and completion does not depend on it.
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# Google Cloud SDK: installed via Homebrew (cask gcloud-cli). PATH and shell
+# completion are provided by Homebrew — no manual sourcing needed.
+
+# Golang
+export PATH="$HOME/go/bin:$PATH"
+
+# direnv
+eval "$(direnv hook zsh)"
+
+# Homebrew binaries
+export PATH="$BREW_PREFIX/bin:$PATH"
+
+# Aliases
+alias vim='nvim'
+# AstroNvim trial. NVIM_APPNAME swaps every nvim path at once — config,
+# plugins, state and cache all move to ~/{.config,.local/share,.local/state,
+# .cache}/astronvim — so this cannot touch the real setup in ~/.config/nvim.
+alias astro='NVIM_APPNAME=astronvim nvim'
+
+# Open manpages in nvim
+export MANPAGER='nvim +Man!'
+
+# Open default session in tmux
+alias td="tmux attach -t default || exec tmux new -s default"
+
+# btop reads its theme once at startup and cannot follow the OS on its own.
+# launch.sh picks the flavour; tmux's prefix+b popup calls the same script, so
+# both routes agree. See the script for why it is not a function.
+function btop() { "$HOME/.config/btop/launch.sh" "$@" }
+
+# yazi, but cd's to wherever you navigated on exit — the upstream wrapper.
+# A function, not an alias: only a function can cd the calling shell.
+# Quit with q to keep the directory, Q to leave $PWD alone.
+function y() {
+	local tmp cwd
+	tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
+	command rm -f -- "$tmp"
+}
+
+# vi mode
+bindkey -v
+
+function zle-keymap-select {
+  if [[ $KEYMAP == vicmd ]]; then
+    printf '\e[2 q'   # block cursor (normal mode)
+  else
+    printf '\e[6 q'   # underline cursor (insert mode)
+  fi
+}
+
+function zle-line-init {
+  printf '\e[6 q'     # start in insert mode
+}
+
+zle -N zle-keymap-select
+zle -N zle-line-init
+
+# main opts
+# share_history implies inc_append_history, so that one is dropped. append_history
+# stays: it is not about incremental writes but about a session appending to the
+# file rather than replacing it wholesale on exit, which is the difference
+# between adding to the history and overwriting everyone else's.
+setopt append_history
+setopt share_history
+setopt extended_history      # record timestamp + duration per entry
+setopt hist_ignore_all_dups  # a repeat drops the older copy rather than stacking
+setopt hist_save_no_dups     # ...and don't write duplicates to the file either
+setopt hist_find_no_dups     # ...and don't show the same line twice when searching
+setopt hist_ignore_space     # a leading space keeps a command out of history
+setopt hist_reduce_blanks    # normalise whitespace before storing
+setopt hist_verify           # !! expands onto the line for review, not straight to run
+
+setopt auto_menu menu_complete # autocmp first menu match
+setopt auto_param_slash # when a dir is completed, add a / instead of a trailing space
+setopt complete_in_word # complete from where the cursor is, not just at the end
+setopt always_to_end    # ...and put the cursor at the end once it matches
+setopt no_case_glob no_case_match # case-insensitive globbing and =~ matching
+                                  # (completion's case-insensitivity is the
+                                  # matcher-list zstyle at the top of this file)
+
+# history functionality
+HISTFILE=$HOME/.zhistory
+SAVEHIST=100000
+HISTSIZE=100000
+
+# Type a prefix, then Ctrl-P / Ctrl-N to walk only the history that starts with
+# it. These widgets match everything left of the cursor; the plain
+# history-search-* pair they replace matched on the first word alone, so
+# `git comm<C-p>` searched for `git` rather than `git comm`.
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey '^P' up-line-or-beginning-search
+bindkey '^N' down-line-or-beginning-search
+#bindkey '^R' fzf-history-widget
+
+# zsh-autosuggestions, from Homebrew. Guarded so a machine without it is a no-op.
+[[ -f $BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &&
+	source $BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# set up prompt
+PROMPT='
+%2~ ❯ '
+export PATH="$HOME/.local/bin:$PATH"
+
+# Machine-specific settings (per-host tooling, work paths, secrets) live here,
+# untracked and outside this repo. Sourced before zoxide so any PATH it adds is
+# part of the final PATH zoxide's hook captures below.
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
+# zoxide. Upstream wants this at the end of the file: the init hooks the prompt
+# to record every directory you visit, and it must see the final PATH. It
+# defines `z` (jump) and `zi` (interactive pick) as functions.
+eval "$(zoxide init zsh)"
+
+# zz: same as z, for when the muscle memory doubles the key.
+# There is no `zi` alias here on purpose — zoxide's init already defines zi as a
+# function, so `alias zi='zi'` would expand straight back to it and do nothing.
+alias zz='z'

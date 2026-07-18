@@ -232,6 +232,10 @@ link_dotfile() {
 
 link_dotfile "$ROOT_DIR/editors/intellij/ideavimrc" "$HOME/.ideavimrc" "ideavimrc"
 link_dotfile "$ROOT_DIR/editors/nvim" "$HOME/.config/nvim" "nvim"
+# The shared zshrc sources ~/.zshrc.local at the end for per-machine tweaks
+# (work paths, secrets, tool-managed blocks). That file is intentionally not
+# tracked here and is left untouched on machines that already have one.
+link_dotfile "$ROOT_DIR/shell/zshrc" "$HOME/.zshrc" "zshrc"
 if [ "$(uname -s)" = "Darwin" ]; then
   aerospace_xdg_config="$HOME/.config/aerospace/aerospace.toml"
   if [ -e "$aerospace_xdg_config" ] || [ -L "$aerospace_xdg_config" ]; then

@@ -9,6 +9,7 @@ Personal dotfiles for a macOS/Linux development environment.
 - kitty: `~/.config/kitty`
 - tmux: `~/.tmux.conf`, status bar modules in `~/.tmux/scripts`
 - Yazi: `~/.config/yazi`
+- Zsh: `~/.zshrc` (shared; sources an untracked `~/.zshrc.local` for per-machine tweaks)
 
 ## Installation
 
@@ -24,10 +25,16 @@ The installer creates these symlinks:
 - `~/.tmux.conf` -> `terminal/tmux/tmux.conf`
 - `~/.tmux/scripts` -> `terminal/tmux/scripts`
 - `~/.config/yazi` -> `terminal/yazi`
+- `~/.zshrc` -> `shell/zshrc`
 - macOS only: `~/.aerospace.toml` -> `aerospace/aerospace.toml`,
   `~/.config/karabiner/karabiner.json` -> `karabiner/karabiner.json`
 
 If a target already exists and is not a symlink, it is moved to a `.bak` file before linking.
+
+Machine-specific shell settings (work paths, per-host tooling, secrets) go in
+`~/.zshrc.local`, which the shared `~/.zshrc` sources at the end. That file is
+never tracked here, so each machine keeps its own; a machine that already has one
+is left untouched.
 
 ## kitty
 
