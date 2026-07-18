@@ -1,0 +1,5 @@
+# Follow sourced files and resolve `# shellcheck source=` directives relative to
+# the script being checked (SCRIPTDIR), so the tmux modules sourcing lib.sh via a
+# computed path are followed instead of flagged SC1091.
+external-sources=true
+source-path=SCRIPTDIR
