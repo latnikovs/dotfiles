@@ -20,7 +20,9 @@ install_macos_deps() {
 
   # lazygit: tmux.conf binds it to prefix+g as a popup.
   # git-delta: installs the 'delta' binary; wired into git via configure_delta.
-  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide git-delta)
+  # direnv, fzf, zsh-autosuggestions: used by ~/.zshrc (not yet tracked here), so
+  # a fresh machine has them available once the shell config lands.
+  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide git-delta direnv fzf zsh-autosuggestions)
   local missing=()
   local pkg
 
