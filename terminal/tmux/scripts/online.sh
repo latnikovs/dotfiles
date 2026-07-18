@@ -39,9 +39,11 @@ else
 fi
 
 if [ "$state" = up ]; then
-	# Icon only: online is the boring case and does not need a word for it. No
-	# label, so the glyph sits tight between both caps.
-	pill "$surface" "$online" "$ICO_WIFI"
+	# Icon only: online is the boring case and does not need a word for it.
+	# The md-wifi glyph's ink is wider than its cell, so with nothing after it
+	# the right cap paints over the fan and clips it. A trailing space gives the
+	# glyph a buffer column — the same room the labelled pills get for free.
+	pill "$surface" "$online" "$ICO_WIFI" " "
 else
 	pill "$surface" "$offline" "$ICO_WIFI_OFF" " offline"
 fi
