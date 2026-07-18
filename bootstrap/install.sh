@@ -238,7 +238,13 @@ if [ "$(uname -s)" = "Darwin" ]; then
   fi
 
   link_dotfile "$ROOT_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml" "aerospace"
-  link_dotfile "$ROOT_DIR/karabiner/karabiner.json" "$HOME/.config/karabiner/karabiner.json" "karabiner"
+  # Karabiner-Elements rewrites its config on launch: it reads the file, expands
+  # it (device settings, defaults) and writes back a regular file, replacing any
+  # symlink. Linking would therefore be undone every run — each bootstrap would
+  # find a real file, back it up (.bak.N pile-up) and reset Karabiner to this
+  # minimal seed. So the repo file is a one-time seed and the live config, once
+  # Karabiner owns it, is left alone. Same rationale as btop.conf below.
+  seed_dotfile "$ROOT_DIR/karabiner/karabiner.json" "$HOME/.config/karabiner/karabiner.json" "karabiner config"
 fi
 link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 # The status bar calls these by absolute path, so they need a stable home that
