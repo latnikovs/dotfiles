@@ -22,7 +22,8 @@ install_macos_deps() {
   # git-delta: installs the 'delta' binary; wired into git via configure_delta.
   # direnv, fzf, zsh-autosuggestions: used by ~/.zshrc (not yet tracked here), so
   # a fresh machine has them available once the shell config lands.
-  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide git-delta direnv fzf zsh-autosuggestions)
+  # fzf-tab: fzf-driven completion menu; bat/eza render its file/dir previews.
+  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide git-delta direnv fzf zsh-autosuggestions fzf-tab bat eza)
   local missing=()
   local pkg
 

@@ -142,6 +142,30 @@ bindkey '^P' up-line-or-beginning-search
 bindkey '^N' down-line-or-beginning-search
 #bindkey '^R' fzf-history-widget
 
+# fzf-tab: replace zsh's completion menu with an fzf picker plus previews. Must
+# load after compinit and before zsh-autosuggestions (which wraps completion
+# widgets). Guarded so a machine without the plugin is a no-op.
+if [[ -f $BREW_PREFIX/opt/fzf-tab/share/fzf-tab/fzf-tab.zsh ]]; then
+	source $BREW_PREFIX/opt/fzf-tab/share/fzf-tab/fzf-tab.zsh
+	# menu_complete auto-selects the first match and skips the menu, which would
+	# bypass fzf-tab's popup — turn it off while fzf-tab is active.
+	unsetopt menu_complete
+	# Let fzf capture the unambiguous prefix instead of zsh drawing its own menu,
+	# and use an escape-free descriptions format so fzf-tab can group results.
+	zstyle ':completion:*' menu no
+	zstyle ':completion:*:descriptions' format '[%d]'
+	# Jump between result groups with [ and ]; inherit FZF_DEFAULT_OPTS.
+	zstyle ':fzf-tab:*' switch-group '[' ']'
+	zstyle ':fzf-tab:*' use-fzf-default-opts yes
+	# Previews: directories via eza, files via bat.
+	zstyle ':fzf-tab:complete:(cd|z):*' fzf-preview \
+		'eza -1 --color=always --icons=always $realpath'
+	zstyle ':fzf-tab:complete:(nvim|vim|cat|bat|less|cp|mv|rm):*' fzf-preview \
+		'[[ -d $realpath ]] && eza -1 --color=always --icons=always $realpath || bat --color=always --style=numbers --line-range=:300 $realpath'
+	# Keep git's own ref ordering in `git checkout` completion.
+	zstyle ':completion:*:git-checkout:*' sort false
+fi
+
 # zsh-autosuggestions, from Homebrew. Guarded so a machine without it is a no-op.
 [[ -f $BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &&
 	source $BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
