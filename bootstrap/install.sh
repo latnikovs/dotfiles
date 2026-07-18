@@ -90,8 +90,10 @@ install_tpm() {
 
 # Wire delta into git's global config. This writes ~/.gitconfig (a machine-owned
 # file this repo does not track), so it is imperative rather than symlinked.
-# delta.light is deliberately left unset so delta auto-detects light/dark from
-# the terminal background, matching the latte/macchiato switching used elsewhere.
+# The pager is the delta.sh wrapper (symlinked below) rather than delta itself,
+# so diffs follow the OS appearance (Latte/Macchiato) the way kitty and btop do;
+# delta's own auto-detection fails whenever its output is a pipe. $HOME is quoted
+# so git's shell expands it at run time instead of this script baking in a path.
 configure_delta() {
   if ! has_cmd git; then
     echo "Skipping delta git config: 'git' is not installed"
@@ -104,8 +106,12 @@ configure_delta() {
   fi
 
   echo "Configuring git to use delta"
-  git config --global core.pager delta
-  git config --global interactive.diffFilter "delta --color-only"
+  # Store the literal $HOME so git's shell expands it when it runs the pager,
+  # keeping the value portable instead of baking in this machine's home path.
+  # shellcheck disable=SC2016
+  git config --global core.pager '$HOME/.config/delta/delta.sh'
+  # shellcheck disable=SC2016
+  git config --global interactive.diffFilter '$HOME/.config/delta/delta.sh --color-only'
   git config --global delta.navigate true
   git config --global merge.conflictStyle zdiff3
   git config --global diff.colorMoved default
@@ -245,6 +251,8 @@ if [ "$(uname -s)" = "Darwin" ]; then
   # minimal seed. So the repo file is a one-time seed and the live config, once
   # Karabiner owns it, is left alone. Same rationale as btop.conf below.
   seed_dotfile "$ROOT_DIR/karabiner/karabiner.json" "$HOME/.config/karabiner/karabiner.json" "karabiner config"
+  # lazygit stores its config under Application Support on macOS, not ~/.config.
+  link_dotfile "$ROOT_DIR/terminal/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml" "lazygit config"
 fi
 link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 # The status bar calls these by absolute path, so they need a stable home that
@@ -252,6 +260,9 @@ link_dotfile "$ROOT_DIR/terminal/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 link_dotfile "$ROOT_DIR/terminal/tmux/scripts" "$HOME/.tmux/scripts" "tmux status scripts"
 link_dotfile "$ROOT_DIR/terminal/yazi" "$HOME/.config/yazi" "yazi"
 link_dotfile "$ROOT_DIR/terminal/kitty" "$HOME/.config/kitty" "kitty"
+# The delta wrapper is referenced by git's core.pager and lazygit by absolute
+# path, so it needs a stable home independent of where this repo is checked out.
+link_dotfile "$ROOT_DIR/terminal/delta/delta.sh" "$HOME/.config/delta/delta.sh" "delta wrapper"
 
 # btop persists its own settings: change a box or a sort in the TUI and it
 # rewrites btop.conf on exit. So the live config is seeded rather than linked —
