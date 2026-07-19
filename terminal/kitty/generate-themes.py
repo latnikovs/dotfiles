@@ -93,17 +93,22 @@ def convert(src, name):
     # Dimmest palette colour that stays readable on this background: slot 8
     # suits light themes, but on dark ones it drops to ~2:1 contrast.
     inactive = dim_but_legible(bg, [palette[8], palette[7], fg])
-    out.append("# Tab bar, derived from this palette. Neither tab gets a background")
-    out.append("# fill — both sit on the window background so the whole bar stays")
-    out.append("# uniformly translucent (kitty.conf sets tab_bar_background none, and")
-    out.append("# a filled tab would render opaque against it). The active tab is")
-    out.append("# marked by weight, not colour: bold (active_tab_font_style in")
-    out.append("# kitty.conf) plus the full-strength foreground, versus the dimmed")
-    out.append("# inactive foreground below.")
-    out.append(f"# Foreground contrast on the bar: active {contrast(bg, fg):.1f}:1, "
-               f"inactive {contrast(bg, inactive):.1f}:1.")
-    out.append(f"{'active_tab_background':<26} {bg}")
-    out.append(f"{'active_tab_foreground':<26} {fg}")
+    # The tab bar itself is hidden (kitty.conf: tab_bar_style hidden), so these
+    # active-tab colours are seen only in the select_tab picker overlay, which
+    # reuses the tab-bar rendering to list the tabs. The highlighted (current)
+    # row gets a solid accent fill — the Catppuccin magenta (slot 5) — so the
+    # selection stands out in the list; the other rows stay bare on the window
+    # background with a dimmed foreground. active_tab_foreground is picked by
+    # contrast because the magenta is dark in Latte but light in Macchiato, so a
+    # fixed choice would fail WCAG in one flavor.
+    accent = palette[5]
+    active_fg = max([bg, fg], key=lambda c: contrast(accent, c))
+    out.append("# select_tab picker (the bar is hidden): the highlighted row uses")
+    out.append("# the accent fill below; inactive rows are bare on the background.")
+    out.append(f"# Highlight contrast: text {contrast(accent, active_fg):.1f}:1 on accent; "
+               f"inactive text {contrast(bg, inactive):.1f}:1 on bg.")
+    out.append(f"{'active_tab_background':<26} {accent}")
+    out.append(f"{'active_tab_foreground':<26} {active_fg}")
     out.append(f"{'inactive_tab_background':<26} {bg}")
     out.append(f"{'inactive_tab_foreground':<26} {inactive}")
     out.append("")
