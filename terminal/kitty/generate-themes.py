@@ -43,11 +43,6 @@ def dim_but_legible(bg, candidates, floor=3.0):
         max(candidates, key=lambda c: contrast(bg, c))
 
 
-def most_legible(bg, candidates):
-    """Candidate with the highest contrast against bg."""
-    return max(candidates, key=lambda c: contrast(bg, c))
-
-
 SCALAR = {
     "background": "background",
     "foreground": "foreground",
@@ -94,35 +89,24 @@ def convert(src, name):
     out.append(f"{'cursor':<26} none")
     out.append("")
     bg = colors["background"]
+    fg = colors["foreground"]
     # Dimmest palette colour that stays readable on this background: slot 8
     # suits light themes, but on dark ones it drops to ~2:1 contrast.
-    inactive = dim_but_legible(bg, [palette[8], palette[7], colors["foreground"]])
-    # The accent cannot be background-coloured text in every flavor: the
-    # magenta slot is dark in Latte but light in Macchiato, so a hardcoded
-    # foreground fails WCAG in one of them. Pick it by contrast instead.
-    accent = palette[5]
-    active_fg = most_legible(accent, [bg, colors["foreground"]])
-    out.append("# Tab bar, derived from this palette. The accent is the magenta")
-    out.append("# slot (Catppuccin pink): blue and green already mean 'active tmux")
-    out.append("# pane' and 'tmux session', so a kitty tab — the outermost")
-    out.append("# container — gets a colour of its own rather than overloading one.")
-    out.append("# Both tab foregrounds are chosen by contrast:")
-    out.append(f"# active {contrast(accent, active_fg):.1f}:1, "
+    inactive = dim_but_legible(bg, [palette[8], palette[7], fg])
+    out.append("# Tab bar, derived from this palette. Neither tab gets a background")
+    out.append("# fill — both sit on the window background so the whole bar stays")
+    out.append("# uniformly translucent (kitty.conf sets tab_bar_background none, and")
+    out.append("# a filled tab would render opaque against it). The active tab is")
+    out.append("# marked by weight, not colour: bold (active_tab_font_style in")
+    out.append("# kitty.conf) plus the full-strength foreground, versus the dimmed")
+    out.append("# inactive foreground below.")
+    out.append(f"# Foreground contrast on the bar: active {contrast(bg, fg):.1f}:1, "
                f"inactive {contrast(bg, inactive):.1f}:1.")
-    out.append("# tab_bar_background is deliberately not set here: kitty.conf leaves")
-    out.append("# it 'none' so the bar stays translucent and seamless with the tmux")
-    out.append("# status bar below, which draws on the same window background.")
-    out.append(f"{'active_tab_background':<26} {accent}")
-    out.append(f"{'active_tab_foreground':<26} {active_fg}")
+    out.append(f"{'active_tab_background':<26} {bg}")
+    out.append(f"{'active_tab_foreground':<26} {fg}")
     out.append(f"{'inactive_tab_background':<26} {bg}")
     out.append(f"{'inactive_tab_foreground':<26} {inactive}")
     out.append("")
-
-    # Active tab text sits on the accent; make sure that pairing is readable too.
-    ratio = contrast(accent, active_fg)
-    if ratio < 3.0:
-        print(f"WARNING: {name}: active tab {active_fg} on {accent} is only "
-              f"{ratio:.1f}:1", file=sys.stderr)
     return "\n".join(out)
 
 
