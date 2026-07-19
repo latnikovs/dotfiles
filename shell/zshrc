@@ -57,6 +57,13 @@ export PATH="$BREW_PREFIX/bin:$PATH"
 
 # Aliases
 alias vim='nvim'
+
+# eza (modern ls). --icons needs a Nerd Font, which the kitty config already
+# sets (JetBrainsMonoNL Nerd Font); bare `eza` shows no icons without the flag.
+alias ls='eza --icons=auto --group-directories-first'
+alias ll='eza --icons=auto --group-directories-first --long --git'
+alias la='eza --icons=auto --group-directories-first --long --all --git'
+alias lt='eza --icons=auto --tree --level=2'
 # AstroNvim trial. NVIM_APPNAME swaps every nvim path at once — config,
 # plugins, state and cache all move to ~/{.config,.local/share,.local/state,
 # .cache}/astronvim — so this cannot touch the real setup in ~/.config/nvim.
