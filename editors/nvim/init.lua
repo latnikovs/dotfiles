@@ -334,8 +334,7 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
-local function format_with_java_import_cleanup()
-	local bufnr = vim.api.nvim_get_current_buf()
+local function do_format(bufnr)
 	if vim.bo[bufnr].filetype == "java" then
 		local params = vim.lsp.util.make_given_range_params({ 0, 0 }, { vim.api.nvim_buf_line_count(bufnr), 0 }, bufnr)
 		params.context = {
@@ -394,6 +393,37 @@ local function format_with_java_import_cleanup()
 	end
 
 	require("conform").format({ bufnr = bufnr, async = false, lsp_format = "fallback", timeout_ms = 3000 })
+end
+
+local function format_with_java_import_cleanup()
+	local bufnr = vim.api.nvim_get_current_buf()
+	if vim.bo[bufnr].filetype ~= "" then
+		do_format(bufnr)
+		return
+	end
+
+	-- Scratch buffer with no filetype: formatters are picked by filetype and
+	-- conform reads the buffer over stdin, so setting a filetype is enough.
+	local other = "other…"
+	local filetypes = vim.tbl_keys(require("conform").formatters_by_ft)
+	table.sort(filetypes)
+	table.insert(filetypes, other)
+
+	local function set_ft_and_format(ft)
+		if not ft or ft == "" then
+			return
+		end
+		vim.bo[bufnr].filetype = ft
+		do_format(bufnr)
+	end
+
+	vim.ui.select(filetypes, { prompt = "Set filetype to format buffer" }, function(choice)
+		if choice == other then
+			vim.ui.input({ prompt = "Filetype: " }, set_ft_and_format)
+		else
+			set_ft_and_format(choice)
+		end
+	end)
 end
 
 -- [[ Configure and install plugins ]]
@@ -1051,6 +1081,8 @@ require("lazy").setup({
 				-- Java formatting uses jdtls LSP with Google Style (configured in LSP settings)
 				javascript = { "prettierd", "prettier", stop_after_first = true },
 				javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+				json = { "prettierd", "prettier", stop_after_first = true },
+				jsonc = { "prettierd", "prettier", stop_after_first = true },
 				lua = { "stylua" },
 				typescript = { "prettierd", "prettier", stop_after_first = true },
 				typescriptreact = { "prettierd", "prettier", stop_after_first = true },
