@@ -225,13 +225,11 @@ tmux capture-pane -p | head -1 | python3 -c \
 An empty list means the glyph was lost on the way in (check `lib.sh` /
 `icons.sh`); a codepoint listed but not drawn means the font lacks it.
 
-## tmux plugins (TPM, Resurrect, Continuum)
+## tmux plugins (TPM)
 
 The tmux config includes:
 
 - `tmux-plugins/tpm`
-- `tmux-plugins/tmux-resurrect`
-- `tmux-plugins/tmux-continuum`
 - `catppuccin/tmux` (palette only; the status bar is defined in `tmux.conf`)
 - `omerxx/tmux-sessionx`
 
@@ -247,14 +245,9 @@ Then start tmux and install plugins:
 - Install plugins from `.tmux.conf`: `Prefix + I`
 - Session switcher (sessionx): `Prefix + o`
 
-Useful keys for session persistence:
-
-- Save session manually: `Prefix + Ctrl-s`
-- Restore session manually: `Prefix + Ctrl-r`
-
-`tmux-continuum` is set to auto-save every 15 minutes (its default) and
-auto-restore on tmux start. It hooks itself onto `status-right`, which is why
-the `run '~/.tmux/plugins/tpm/tpm'` line has to stay last in `tmux.conf`.
+There is no session persistence across reboots — sessions are recreated on
+demand with the `td` shell function (see `shell/zshrc`), which attaches to a
+session named after the current directory, creating it rooted there if needed.
 
 ## Neovim setup
 

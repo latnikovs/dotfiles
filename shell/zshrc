@@ -72,8 +72,37 @@ alias astro='NVIM_APPNAME=astronvim nvim'
 # Open manpages in nvim
 export MANPAGER='nvim +Man!'
 
-# Open default session in tmux
-alias td="tmux attach -t default || exec tmux new -s default"
+# td: sessionizer — attach to the tmux session named after the current
+# directory, creating it (rooted here) on first use. One session per project
+# dir; sessions are cheap to recreate, which is why resurrect/continuum are
+# gone from tmux.conf.
+function td() {
+	local session="${PWD##*/}"
+	# $HOME's basename would name the session after the user; keep a neutral
+	# catch-all session for home instead.
+	[[ $PWD == $HOME ]] && session=default
+	# tmux parses targets as session:window.pane, so a directory like
+	# `my.project` or `foo:bar` would yield a name that no -t can address.
+	session="${session//[.:]/_}"
+
+	# has-session's -t is a pattern, resolved exact → prefix → fnmatch. Bare
+	# `dot` would therefore match an existing `dotfiles` session and land in the
+	# wrong project; the leading = pins it to an exact match. Detached (-d), so
+	# the attach/switch below stays the single entry point.
+	tmux has-session -t "=$session" 2>/dev/null ||
+		tmux new-session -d -s "$session" -c "$PWD"
+
+	if [[ -n $TMUX ]]; then
+		# Already inside tmux: new-session refuses to nest, and `exec` would
+		# replace this pane's shell and kill the pane. Move the client instead.
+		tmux switch-client -t "=$session"
+	else
+		# exec, not a plain call: tmux replaces the shell rather than running
+		# as its child, so detaching closes the terminal window instead of
+		# dropping back to a shell that only exists to have launched tmux.
+		exec tmux attach -t "=$session"
+	fi
+}
 
 # btop reads its theme once at startup and cannot follow the OS on its own.
 # launch.sh picks the flavour; tmux's prefix+b popup calls the same script, so
@@ -196,3 +225,7 @@ eval "$(zoxide init zsh)"
 # There is no `zi` alias here on purpose — zoxide's init already defines zi as a
 # function, so `alias zi='zi'` would expand straight back to it and do nothing.
 alias zz='z'
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/Users/latnikovd/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
