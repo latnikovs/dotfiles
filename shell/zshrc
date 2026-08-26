@@ -221,7 +221,3 @@ eval "$(zoxide init zsh)"
 # There is no `zi` alias here on purpose — zoxide's init already defines zi as a
 # function, so `alias zi='zi'` would expand straight back to it and do nothing.
 alias zz='z'
-
-### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
-export PATH="/Users/latnikovd/.rd/bin:$PATH"
-### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
