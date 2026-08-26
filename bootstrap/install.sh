@@ -361,9 +361,16 @@ if has_cmd nvim; then
   echo "Bootstrapping Neovim plugins..."
   # LazyVim owns its own tool lists: LSP servers, formatters and treesitter
   # parsers come from the ensure_installed entries of the extras enabled in
-  # editors/nvim/lazyvim.json, not from an explicit list here. A plugin sync
-  # is all the bootstrap needs; Mason finishes installing on first launch.
-  nvim --headless "+Lazy! sync" "+qa"
+  # editors/nvim/lazyvim.json, not from an explicit list here. Plugins are all
+  # the bootstrap needs; Mason finishes installing on first launch.
+  #
+  # install + clean + restore rather than 'sync' (install + clean + update):
+  # sync moves every plugin to its latest commit and rewrites lazy-lock.json,
+  # which both drifts machines apart and dirties this repo, since ~/.config/nvim
+  # is a symlink into it. restore pins to the tracked lockfile instead, so a
+  # fresh machine ends up on exactly the versions committed here. Run
+  # ':Lazy update' by hand to move the lockfile forward.
+  nvim --headless "+Lazy! install" "+Lazy! clean" "+Lazy! restore" "+qa"
 else
   echo "Skipping Neovim bootstrap: 'nvim' is not installed"
 fi
