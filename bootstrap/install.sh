@@ -23,7 +23,11 @@ install_macos_deps() {
   # direnv, fzf, zsh-autosuggestions: used by ~/.zshrc (not yet tracked here), so
   # a fresh machine has them available once the shell config lands.
   # fzf-tab: fzf-driven completion menu; bat/eza render its file/dir previews.
-  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide git-delta direnv fzf zsh-autosuggestions fzf-tab bat eza)
+  # colima: the container runtime VM. Provides no CLI of its own, so docker and
+  # its plugins come from Homebrew too; docker-credential-helper supplies
+  # docker-credential-osxkeychain, without which every registry pull fails.
+  # Plugin dirs are wired up by configure_docker_plugins.
+  local packages=(neovim ripgrep fd node tmux tree-sitter-cli gopass yazi lazygit btop zoxide git-delta direnv fzf zsh-autosuggestions fzf-tab bat eza colima docker docker-compose docker-buildx docker-credential-helper)
   local missing=()
   local pkg
 
@@ -118,6 +122,52 @@ configure_delta() {
   git config --global delta.navigate true
   git config --global merge.conflictStyle zdiff3
   git config --global diff.colorMoved default
+}
+
+# Homebrew installs docker-compose and docker-buildx as CLI plugins under its own
+# prefix, which the docker CLI does not search by default -- `docker compose`
+# fails with "unknown command" until config.json points at it. Merge the path in
+# rather than overwriting: the same file holds credential helpers and contexts.
+configure_docker_plugins() {
+  if ! has_cmd docker; then
+    echo "Skipping docker plugin config: 'docker' is not installed"
+    return
+  fi
+
+  if ! has_cmd python3; then
+    echo "Skipping docker plugin config: 'python3' is not installed"
+    return
+  fi
+
+  local plugin_dir
+  plugin_dir="$(brew --prefix)/lib/docker/cli-plugins"
+
+  if [ ! -d "$plugin_dir" ]; then
+    echo "Skipping docker plugin config: $plugin_dir does not exist"
+    return
+  fi
+
+  PLUGIN_DIR="$plugin_dir" python3 - <<'PYEOF'
+import json, os, pathlib
+
+path = pathlib.Path.home() / ".docker" / "config.json"
+path.parent.mkdir(parents=True, exist_ok=True)
+
+try:
+    config = json.loads(path.read_text())
+except (FileNotFoundError, ValueError):
+    config = {}
+
+plugin_dir = os.environ["PLUGIN_DIR"]
+dirs = config.setdefault("cliPluginsExtraDirs", [])
+
+if plugin_dir in dirs:
+    print(f"Docker plugin dir already configured: {plugin_dir}")
+else:
+    dirs.append(plugin_dir)
+    path.write_text(json.dumps(config, indent=2) + "\n")
+    print(f"Docker plugin dir added: {plugin_dir}")
+PYEOF
 }
 
 # Point git at the repo's tracked hooks (the pre-commit lint gate) via
@@ -303,6 +353,7 @@ link_dotfile "$ROOT_DIR/terminal/btop/launch.sh" "$HOME/.config/btop/launch.sh" 
 install_macos_deps
 install_tpm
 configure_delta
+configure_docker_plugins
 configure_git_hooks
 install_yazi_flavors
 

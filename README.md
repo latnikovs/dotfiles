@@ -74,14 +74,14 @@ wrapper, and sets `navigate`, `zdiff3` conflicts and `colorMoved`.
 ## Shell
 
 `~/.zshrc` is shared and tracked. Anything that differs per machine — work
-paths, tool-managed blocks (Rancher Desktop), secrets — goes in
+paths, tool-managed blocks (SDKMAN, rustup), secrets — goes in
 `~/.zshrc.local`, which is sourced at the end (before zoxide, so its PATH
 additions are part of the final PATH) and never tracked. Homebrew paths resolve
 through a detected `$BREW_PREFIX`, so the file works on both Apple Silicon and
 Intel.
 
 > **Caveat:** `~/.zshrc` is a symlink into this repo, so an installer that
-> appends to `~/.zshrc` (Rancher Desktop, SDKMAN, rustup…) writes *through* it
+> appends to `~/.zshrc` (SDKMAN, rustup, asdf…) writes *through* it
 > and dirties the repo. When that happens, move the injected block into
 > `~/.zshrc.local` and `git checkout shell/zshrc`.
 
