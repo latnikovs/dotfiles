@@ -307,11 +307,12 @@ configure_git_hooks
 install_yazi_flavors
 
 if has_cmd nvim; then
-  echo "Bootstrapping Neovim plugins and Mason tools..."
-  TS_PARSERS=(bash css diff go html java javascript lua luadoc markdown markdown_inline query tsx typescript vim vimdoc)
+  echo "Bootstrapping Neovim plugins..."
+  # LazyVim owns its own tool lists: LSP servers, formatters and treesitter
+  # parsers come from the ensure_installed entries of the extras enabled in
+  # editors/nvim/lazyvim.json, not from an explicit list here. A plugin sync
+  # is all the bootstrap needs; Mason finishes installing on first launch.
   nvim --headless "+Lazy! sync" "+qa"
-  nvim --headless "+Lazy load mason-tool-installer.nvim" "+MasonToolsInstallSync" "+qa"
-  nvim --headless "+Lazy load nvim-treesitter" "+TSInstall ${TS_PARSERS[*]}" "+qa"
 else
   echo "Skipping Neovim bootstrap: 'nvim' is not installed"
 fi

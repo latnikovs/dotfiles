@@ -251,6 +251,11 @@ session named after the current directory, creating it rooted there if needed.
 
 ## Neovim setup
 
+The config is [LazyVim](https://lazyvim.org) — the starter, plus the extras
+listed in `editors/nvim/lazyvim.json` (Angular, Go, Java, JSON, Markdown,
+Tailwind, Terraform, TypeScript, and neo-tree) and a small amount of local
+config under `editors/nvim/lua/`.
+
 ### Prerequisites
 
 - `git`
@@ -263,24 +268,33 @@ session named after the current directory, creating it rooted there if needed.
 - `java` (JDK 21+)
 - C build toolchain (`xcode-select --install` on macOS)
 
-The bootstrap installs the Homebrew-provided ones and syncs plugins/Mason tools
+The bootstrap installs the Homebrew-provided ones and syncs plugins
 automatically; the steps below are the manual equivalent.
 
-### Bootstrap plugins and tools
+### Bootstrap plugins
 
 ```bash
 brew install neovim ripgrep fd node && \
-nvim --headless "+Lazy! sync" "+qa" && \
-nvim --headless "+Lazy load mason-tool-installer.nvim" "+MasonToolsInstallSync" "+qa"
+nvim --headless "+Lazy! sync" "+qa"
 ```
 
-Optional manual flow:
+LSP servers, formatters and treesitter parsers are not listed here — LazyVim
+installs them from the `ensure_installed` entries of the enabled extras, and
+Mason finishes any remaining downloads on first launch.
 
-```bash
-nvim
-```
+Then, in a normal `nvim` session:
 
-Then run:
-
-- `:Mason`
+- `:Lazy` — plugin status
+- `:Mason` — tool status
 - `:checkhealth`
+
+### Local additions
+
+`lua/config/` holds the deviations from the stock starter:
+
+- `remote_clipboard.lua` — OSC 52 yank, so `y` reaches the local clipboard
+  from an SSH or tmux session.
+- `keymaps.lua` — `<leader>yp` yanks the current `path:line`.
+
+`lua/plugins/example.lua` is the starter's commented reference file, kept as a
+cookbook for adding plugin specs.

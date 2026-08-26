@@ -64,10 +64,6 @@ alias ls='eza --icons=auto --group-directories-first'
 alias ll='eza --icons=auto --group-directories-first --long --git'
 alias la='eza --icons=auto --group-directories-first --long --all --git'
 alias lt='eza --icons=auto --tree --level=2'
-# AstroNvim trial. NVIM_APPNAME swaps every nvim path at once — config,
-# plugins, state and cache all move to ~/{.config,.local/share,.local/state,
-# .cache}/astronvim — so this cannot touch the real setup in ~/.config/nvim.
-alias astro='NVIM_APPNAME=astronvim nvim'
 
 # Open manpages in nvim
 export MANPAGER='nvim +Man!'
