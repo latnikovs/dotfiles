@@ -10,3 +10,7 @@ vim.keymap.set("n", "<leader>yp", function()
   vim.fn.setreg("+", location)
   vim.notify("Copied " .. location)
 end, { desc = "[Y]ank full [P]ath:line" })
+
+-- Buffer shortcuts carried over from the kickstart config.
+vim.keymap.set("n", "<leader>bn", "<cmd>enew<cr>", { desc = "[B]uffer [N]ew" })
+vim.keymap.set("n", "<leader>bR", "<cmd>e!<cr>", { desc = "[B]uffer [R]eload" })
