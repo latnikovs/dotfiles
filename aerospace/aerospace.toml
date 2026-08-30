@@ -88,6 +88,7 @@ outer.right =      0
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 alt-slash = 'layout tiles horizontal vertical'
 alt-comma = 'layout accordion horizontal vertical'
+alt-shift-space = 'layout floating tiling'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
 cmd-alt-h = 'focus left'
@@ -106,20 +107,20 @@ cmd-ctrl-alt-shift-l = 'move right'
 alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
-alt-b = 'workspace B' # browser
-alt-c = 'workspace C' # chrome
-alt-d = 'workspace D' # dbeaver
-alt-e = 'workspace E' # finder
-alt-g = 'workspace G' # chatgpt
-alt-i = 'workspace I' # intellij
-alt-o = 'workspace O' # keepassxc
-alt-p = 'workspace P' # postman
-alt-m = 'workspace M' # mail
-alt-n = 'workspace N' # obsidian
-alt-s = 'workspace S' # safari
-alt-t = 'workspace T' # terminal
-alt-u = 'workspace U' # telegram
-alt-y = 'workspace Y' # teams
+alt-b = ['workspace B', 'exec-and-forget open -b com.microsoft.edgemac || open -b com.brave.Browser'] # browser: edge (work), else brave
+alt-c = ['workspace C', 'exec-and-forget open -b com.google.Chrome'] # chrome
+alt-d = ['workspace D', 'exec-and-forget open -b org.jkiss.dbeaver.core.product'] # dbeaver
+alt-e = ['workspace E', 'exec-and-forget open -b com.apple.finder'] # finder
+alt-g = ['workspace G', 'exec-and-forget open -b com.openai.chat'] # chatgpt
+alt-i = ['workspace I', 'exec-and-forget open -b com.jetbrains.intellij || open -b com.jetbrains.intellij.ce'] # intellij: ultimate, else ce
+alt-o = ['workspace O', 'exec-and-forget open -b org.keepassxc.keepassxc'] # keepassxc
+alt-p = ['workspace P', 'exec-and-forget open -b com.postmanlabs.mac'] # postman
+alt-m = ['workspace M', 'exec-and-forget open -b com.microsoft.Outlook || open -b com.apple.mail'] # mail: outlook (work), else apple mail
+alt-n = ['workspace N', 'exec-and-forget open -b md.obsidian'] # obsidian
+alt-s = ['workspace S', 'exec-and-forget open -b com.apple.Safari'] # safari
+alt-t = ['workspace T', 'exec-and-forget open -b net.kovidgoyal.kitty'] # terminal
+alt-u = ['workspace U', "exec-and-forget open -a 'Telegram Desktop'"] # telegram
+alt-y = ['workspace Y', 'exec-and-forget open -b com.microsoft.teams2'] # teams
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 cmd-ctrl-alt-shift-1 = 'move-node-to-workspace 1'
