@@ -108,7 +108,7 @@ alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
 alt-b = ['workspace B', 'exec-and-forget open -b com.microsoft.edgemac || open -b com.brave.Browser'] # browser: edge (work), else brave
 alt-c = ['workspace C', 'exec-and-forget open -b com.google.Chrome'] # chrome
-alt-d = ['workspace D', 'exec-and-forget open -b org.jkiss.dbeaver.core.product'] # dbeaver
+alt-d = ['workspace D', 'exec-and-forget open -b com.jetbrains.datagrip'] # datagrip
 alt-e = ['workspace E', 'exec-and-forget open -b com.apple.finder'] # finder
 alt-g = ['workspace G', 'exec-and-forget open -b com.openai.chat'] # chatgpt
 alt-i = ['workspace I', 'exec-and-forget open -b com.jetbrains.intellij || open -b com.jetbrains.intellij.ce'] # intellij: ultimate, else ce
@@ -189,7 +189,7 @@ if.app-id = 'com.google.Chrome'
 run = "move-node-to-workspace C"
 
 [[on-window-detected]]
-if.app-id = 'org.jkiss.dbeaver.core.product'
+if.app-id = 'com.jetbrains.datagrip'
 run = "move-node-to-workspace D"
 
 [[on-window-detected]]
