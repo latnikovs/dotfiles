@@ -106,6 +106,7 @@ cmd-ctrl-alt-shift-l = 'move right'
 alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
+alt-a = ['workspace A', 'exec-and-forget /opt/homebrew/bin/aerospace list-windows --all --format "%{window-title}" | grep -q "^herdr$" || open -na kitty --args --title herdr /opt/homebrew/bin/herdr'] # herdr
 alt-b = ['workspace B', 'exec-and-forget open -b com.microsoft.edgemac || open -b com.brave.Browser'] # browser: edge (work), else brave
 alt-c = ['workspace C', 'exec-and-forget open -b com.google.Chrome'] # chrome
 alt-d = ['workspace D', 'exec-and-forget open -b com.jetbrains.datagrip'] # datagrip
@@ -125,6 +126,7 @@ alt-y = ['workspace Y', 'exec-and-forget open -b com.microsoft.teams2'] # teams
 cmd-ctrl-alt-shift-1 = 'move-node-to-workspace 1'
 cmd-ctrl-alt-shift-2 = 'move-node-to-workspace 2'
 cmd-ctrl-alt-shift-3 = 'move-node-to-workspace 3'
+cmd-ctrl-alt-shift-a = 'move-node-to-workspace A'
 cmd-ctrl-alt-shift-b = 'move-node-to-workspace B'
 cmd-ctrl-alt-shift-c = 'move-node-to-workspace C'
 cmd-ctrl-alt-shift-d = 'move-node-to-workspace D'
@@ -179,6 +181,11 @@ h = ['join-with left', 'mode main']
 j = ['join-with down', 'mode main']
 k = ['join-with up', 'mode main']
 l = ['join-with right', 'mode main']
+
+[[on-window-detected]]
+if.app-id = 'net.kovidgoyal.kitty'
+if.window-title-regex-substring = 'herdr'
+run = "move-node-to-workspace A"
 
 [[on-window-detected]]
 if.app-id = 'net.kovidgoyal.kitty'
