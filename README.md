@@ -157,7 +157,7 @@ After install, set your terminal font to `JetBrainsMono Nerd Font Mono`.
 
 The bar is transparent and each module is a rounded pill floating on the
 terminal background: session on the left, window list centred, then git, docker,
-CPU, memory, battery, network and clock on the right.
+CPU and memory on the right.
 
 ### Colors follow the OS appearance
 
@@ -190,8 +190,8 @@ a work tree, the battery pill on a machine with no battery.
 | `git.sh` | branch, `✚` staged, `●` modified, `…` untracked, conflicts, `⇡⇣` vs upstream |
 | `docker.sh` | the container engine, and how many containers are running |
 | `sys.sh` | CPU and memory load (one job, two pills) |
-| `battery.sh` | charge and charging state |
-| `online.sh` | network reachability, probe cached for 30s |
+| `battery.sh` | charge and charging state — *not wired up* |
+| `online.sh` | network reachability, probe cached for 30s — *not wired up* |
 | `flavor.sh` | the Catppuccin flavor matching the OS appearance |
 | `theme-watch.sh` | reloads the config when that appearance changes |
 | `icons.sh` | publishes the glyphs to tmux as `@cap_*` / `@ico_*` options |
@@ -204,6 +204,21 @@ prints its own styling. See `scripts/lib.sh`.
 
 To add a module: write a script that prints a pill, then append a `#(...)` entry
 to `status-right` in `tmux.conf`, passing the `#{@thm_*}` colors it needs.
+
+### What the bar deliberately does not show
+
+No clock, date, battery or network pill. macOS draws all four in its own menu
+bar a few pixels above this one, and a status bar that repeats the system one is
+just noise. `battery.sh` and `online.sh` are still here and still run standalone;
+to put them back, pass `#{@icon_yellow}`, `#{@icon_red}` and `#{@icon_teal}` to
+`status.sh` again and restore their `append` lines. The date and clock were
+plain formats rather than modules — `%e %b` and `%H:%M` on the sky and lavender
+pills, with `@ico_date` / `@ico_clock` still published by `icons.sh`.
+
+If the date pill ever comes back, keep `%e` rather than `%-d`: `%e` space-pads
+the day, so the pill is the same width on the 7th as on the 17th, where `%-d`
+shrinks it by a column for nine days a month and drags the centred window list
+sideways every time — the reflow `status.sh` exists to avoid.
 
 The docker pill is worth a note, because "prints nothing when it has nothing to
 say" is doing real work there: a laptop's container VM is usually stopped, and a
