@@ -227,6 +227,22 @@ rather than at the next 5s tick.
 The dot is gated on the pane also *looking* like Claude, so a state left behind
 by a crash disappears as soon as the pane runs something else.
 
+The same state feeds the **agents pill** in `status-left`, which answers the
+question the dot cannot: what are the agents in the tabs you are *not* looking
+at doing? Every kitty tab is its own client on its own session, but they all
+share one tmux server, so `#{S:...}` / `#{W:...}` — tmux's session and window
+loops — let one status line walk the whole server and name each session that
+holds agents, followed by one dot per agent in it: `󰚩 wms ◉ ●  ui ◉`. Still a
+plain format, so still no job and no polling. Each client drops its own session from the list via
+`#{client_session}`, since that agent is already on the window chip beside it.
+
+Two things follow from how tmux parses formats, and both cost an evening if
+rediscovered the hard way. Styles inside a conditional must be
+single-attribute — `#[fg=x]#[bg=y]`, never `#[fg=x,bg=y]` — because the parser
+splits the conditional's branches on that comma and draws half a pill. And the
+"nothing to say, draw nothing" rule needs `#{E:...}` to expand the list before
+comparing it to the empty string.
+
 Hooks live in `~/.claude/settings.json`, which this repo does not track (it
 holds machine-local permissions and plugin state). Wire them up per machine:
 

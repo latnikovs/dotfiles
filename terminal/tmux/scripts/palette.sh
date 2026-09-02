@@ -38,6 +38,12 @@
 #   @fill_<name>  the surface a normal pill is drawn on.
 #   @icon_<name>  colour for that pill's icon: the raw accent on dark, minimally
 #                 darkened to 3:1 on light.
+#   @badge_icon_<name>  the same, but for an icon drawn *on the mauve badge*
+#                 rather than on a pill: the active window chip. On Macchiato
+#                 that fill is light mauve and the accents are light pastels, so
+#                 the raw accent lands near 1.5:1 there and the icon all but
+#                 vanishes -- the one place the dark look's "accent on surface"
+#                 rule does not hold, because the surface is not the surface.
 #   @text_<name>  colour for that pill's label: the accent on dark (that IS the
 #                 dark look), neutral @thm_fg on light.
 #   @pill_text    what pill() should colour a label with, or empty to mean 'use
@@ -137,11 +143,24 @@ darken_to() {
 
 surface="$(tmux show -gqv @thm_surface_0 2>/dev/null)"
 
+# The active window chip is always the mauve badge, so icons drawn on it are
+# measured against that one colour. Derived before the loop because the loop
+# reaches mauve partway through, after green has already needed this value.
+mauve="$(tmux show -gqv @thm_mauve 2>/dev/null)"
+if [ "$flavor" = latte ]; then
+	badge_mauve="$(blend "$mauve" "$base" "$BADGE_TINT")"
+else
+	badge_mauve="$mauve"
+fi
+
 for name in "${ACCENTS[@]}"; do
 	value="$(tmux show -gqv "@thm_$name" 2>/dev/null)"
 	[ -n "$value" ] || continue
 
 	tmux set -g "@fill_$name" "$surface"
+
+	# 3:1, the graphic floor, same as @icon_*: this is a glyph, not text.
+	tmux set -g "@badge_icon_$name" "$(darken_to "$value" "$badge_mauve" 3.0)"
 
 	if [ "$flavor" = latte ]; then
 		# Icon only has to clear 3:1 against the pill, so it barely moves and

@@ -34,10 +34,12 @@ tmux set -g @ico_shell $'\U000f018d'    # md-console
 tmux set -g @ico_claude $'\U000f06a9'   # md-robot
 tmux set -g @ico_default $'\U000f0349'  # md-magnify
 
-# Claude Code activity dot, appended to a window chip by @claude_dot. Geometric
-# shapes rather than Nerd Font glyphs: the dot sits right next to the robot
-# icon, and at that size a hollow/filled pair reads as a state change where two
-# different pictograms just read as noise.
-tmux set -g @ico_claude_busy $'\u25cb'  # white circle: running
-tmux set -g @ico_claude_wait $'\u25c9'  # fisheye: wants an answer
-tmux set -g @ico_claude_idle $'\u25cf'  # black circle: turn finished
+# Claude Code state, appended to a window chip by @claude_dot and listed in the
+# agents pill. One family on purpose: all three are the same MDI circle with a
+# different interior, so they read as three values of one thing rather than as
+# three unrelated pictures -- and the interior says which without needing the
+# colour, which the window chip's mauve badge does not always give enough
+# contrast to carry.
+tmux set -g @ico_claude_busy $'\U000f0996'  # md-progress_clock: a turn is running
+tmux set -g @ico_claude_wait $'\U000f02d7'  # md-help_circle: it is asking you something
+tmux set -g @ico_claude_idle $'\U000f0133'  # md-checkbox_marked_circle: turn finished

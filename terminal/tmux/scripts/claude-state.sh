@@ -60,5 +60,14 @@ esac
 
 # status-interval is 5s; without this the chip would lag a turn ending by up to
 # that long, which is exactly the moment the indicator exists for.
-tmux refresh-client -S 2>/dev/null || true
+#
+# Every client, not just this pane's: the agents pill in status-left reports on
+# *other* sessions, so a state change here is news to every other kitty tab's
+# status line. refresh-client with no -t only reaches the client tmux infers
+# from this command's context, which leaves the tabs that actually needed
+# telling waiting for their next tick.
+tmux list-clients -F '#{client_name}' 2>/dev/null | while IFS= read -r client; do
+	[ -n "$client" ] || continue
+	tmux refresh-client -S -t "$client" 2>/dev/null || true
+done
 exit 0
