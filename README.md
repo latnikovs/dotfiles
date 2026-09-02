@@ -194,6 +194,7 @@ a work tree, the battery pill on a machine with no battery.
 | `flavor.sh` | the Catppuccin flavor matching the OS appearance |
 | `theme-watch.sh` | reloads the config when that appearance changes |
 | `icons.sh` | publishes the glyphs to tmux as `@cap_*` / `@ico_*` options |
+| `claude-state.sh` | Claude Code's turn state, as a pane option the window chips read |
 | `lib.sh` | the `pill` helper and the glyph constants |
 
 tmux parses `#[...]` style sequences out of a `#()` job's output but does not
@@ -202,6 +203,42 @@ prints its own styling. See `scripts/lib.sh`.
 
 To add a module: write a script that prints a pill, then append a `#(...)` entry
 to `status-right` in `tmux.conf`, passing the `#{@thm_*}` colors it needs.
+
+### Claude Code activity dot
+
+Windows running Claude Code carry a coloured dot after their name, so the bar
+answers "which agent needs me?" without cycling through windows:
+
+| Dot | Meaning |
+| --- | --- |
+| `○` peach | a turn is running |
+| `◉` red | Claude is waiting on you (permission prompt, idle nag) |
+| `●` green | the turn finished |
+
+`scripts/claude-state.sh` is the whole mechanism. Claude Code's hooks call it on
+every relevant event and it writes the state as a *pane* option
+(`@claude_state`) on the pane the hook ran in; `@claude_dot` in `tmux.conf`
+reads that option straight out of the format tree, since tmux resolves
+`#{@...}` in `window-status-format` against the window's active pane. No `#()`
+job, no polling, no state files to reap — the option dies with the pane, and the
+script ends with `refresh-client -S` so the dot updates the moment a turn ends
+rather than at the next 5s tick.
+
+The dot is gated on the pane also *looking* like Claude, so a state left behind
+by a crash disappears as soon as the pane runs something else.
+
+Hooks live in `~/.claude/settings.json`, which this repo does not track (it
+holds machine-local permissions and plugin state). Wire them up per machine:
+
+```jsonc
+// one entry per event, matcher "*", alongside anything already there
+"UserPromptSubmit" | "PreToolUse" | "PostToolUse" → claude-state.sh busy
+"Notification"                                    → claude-state.sh wait
+"Stop" | "SessionStart"                           → claude-state.sh idle
+"SessionEnd"                                      → claude-state.sh clear
+```
+
+with each command spelled `bash ~/.tmux/scripts/claude-state.sh <state>`.
 
 ### Nerd Font glyphs are never pasted in literally
 

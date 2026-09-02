@@ -33,3 +33,11 @@ tmux set -g @ico_java $'\U000f0176'     # md-coffee
 tmux set -g @ico_shell $'\U000f018d'    # md-console
 tmux set -g @ico_claude $'\U000f06a9'   # md-robot
 tmux set -g @ico_default $'\U000f0349'  # md-magnify
+
+# Claude Code activity dot, appended to a window chip by @claude_dot. Geometric
+# shapes rather than Nerd Font glyphs: the dot sits right next to the robot
+# icon, and at that size a hollow/filled pair reads as a state change where two
+# different pictograms just read as noise.
+tmux set -g @ico_claude_busy $'\u25cb'  # white circle: running
+tmux set -g @ico_claude_wait $'\u25c9'  # fisheye: wants an answer
+tmux set -g @ico_claude_idle $'\u25cf'  # black circle: turn finished
