@@ -156,8 +156,8 @@ After install, set your terminal font to `JetBrainsMono Nerd Font Mono`.
 ## tmux status bar
 
 The bar is transparent and each module is a rounded pill floating on the
-terminal background: session on the left, window list centred, then git, CPU,
-memory, battery, network and clock on the right.
+terminal background: session on the left, window list centred, then git, docker,
+CPU, memory, battery, network and clock on the right.
 
 ### Colors follow the OS appearance
 
@@ -188,6 +188,7 @@ a work tree, the battery pill on a machine with no battery.
 | Script | Shows |
 | --- | --- |
 | `git.sh` | branch, `✚` staged, `●` modified, `…` untracked, conflicts, `⇡⇣` vs upstream |
+| `docker.sh` | the container engine, and how many containers are running |
 | `sys.sh` | CPU and memory load (one job, two pills) |
 | `battery.sh` | charge and charging state |
 | `online.sh` | network reachability, probe cached for 30s |
@@ -203,6 +204,19 @@ prints its own styling. See `scripts/lib.sh`.
 
 To add a module: write a script that prints a pill, then append a `#(...)` entry
 to `status-right` in `tmux.conf`, passing the `#{@thm_*}` colors it needs.
+
+The docker pill is worth a note, because "prints nothing when it has nothing to
+say" is doing real work there: a laptop's container VM is usually stopped, and a
+pill that is always present tells you nothing. Its appearing *is* the signal,
+and the number beside the whale is how many containers are running. A socket
+that exists but does not answer, with a lima process alive, shows `...` while
+the VM boots.
+
+It reads the count from the Docker API over the unix socket rather than from
+`docker ps`: the CLI costs ~65ms of Go startup against curl's ~12ms, inside a
+job that runs every interval — and, more to the point, `curl --max-time` bounds
+it. A half-booted VM answers its socket and then hangs, and `docker ps` has no
+timeout flag to keep that from freezing the whole right-hand side of the bar.
 
 ### Claude Code activity dot
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Single tmux job that renders the whole right-hand side of the status bar.
 # Usage: status.sh <path> <surface> <green> <peach> <sapphire> <mauve> \
-#                  <yellow> <red> <teal>
+#                  <yellow> <red> <teal> <blue> [pill-text]
 #
 # Why this exists rather than four #() jobs, one per module:
 #
@@ -15,7 +15,7 @@
 # redraw: the bar updates atomically.
 #
 # The modules stay separate executables, and still run standalone; this only
-# collapses them into a single job. They run in sequence (~270ms total, once
+# collapses them into a single job. They run in sequence (~280ms total, once
 # per interval), which is well inside the interval and keeps output ordered.
 set -u
 
@@ -30,12 +30,13 @@ mauve="${6:?mauve required}"
 yellow="${7:?yellow required}"
 red="${8:?red required}"
 teal="${9:?teal required}"
+blue="${10:?blue required}"
 
 # What pill() colours a label with, or empty to mean 'use the accent'. Decided
 # per flavor by palette.sh, and exported rather than threaded through every
 # module's argument list: it is the same answer for every pill on the bar, and
 # the modules never need to reason about it.
-export PILL_TEXT="${10:-}"
+export PILL_TEXT="${11:-}"
 
 out=''
 append() {
@@ -48,6 +49,7 @@ append() {
 }
 
 append "$dir/git.sh" "$path" "$surface" "$green" "$peach"
+append "$dir/docker.sh" "$surface" "$blue" "$peach"
 append "$dir/sys.sh" "$surface" "$sapphire" "$mauve" "$peach"
 append "$dir/battery.sh" "$surface" "$green" "$yellow" "$red"
 append "$dir/online.sh" "$surface" "$teal" "$red"

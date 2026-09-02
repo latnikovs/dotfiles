@@ -23,7 +23,8 @@ readonly CAP_R=$'\ue0b4'          # powerline right half circle
 # Material Design icons, all above U+FFFF.
 readonly ICO_BRANCH=$'\U000f062c'   # md-source-branch
 readonly ICO_CONFLICT=$'\U000f0028' # md-alert-circle
-readonly ICO_CPU=$'\U000f0ee0'      # md-cpu-64-bit
+readonly ICO_CPU=$'\U000f0ee0'      # md-cpu_64_bit
+readonly ICO_DOCKER=$'\U000f0868'   # md-docker
 readonly ICO_MEM=$'\U000f035b'      # md-memory
 readonly ICO_WIFI=$'\U000f05a9'     # md-wifi
 readonly ICO_WIFI_OFF=$'\U000f05aa' # md-wifi-off
