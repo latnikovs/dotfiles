@@ -266,6 +266,21 @@ font, and any tool that rewrites the file can silently drop them — which leave
 a bar full of blank gaps that looks like a font problem but is not. The escapes
 name the exact codepoint and cannot be mangled.
 
+### What a codepoint actually draws
+
+A codepoint in `icons.sh` says which glyph is meant but not what it looks like,
+and a wrong one renders as a perfectly good picture of the wrong thing. The
+patched font answers this itself: it keeps the upstream icon names in its `post`
+table, so `\U000f085e` can be looked up and comes back `md-clipboard_pulse_outline`
+— which is what every Neovim window in this bar showed until it was caught.
+Vim and Neovim are not in Material Design at all; their glyphs come from the
+Devicons/custom ranges (`\ue6ae` is `custom-neovim`).
+
+So when adding an icon, verify the name rather than trusting a cheat sheet:
+parse `~/Library/Fonts/JetBrainsMonoNerdFont-Regular.ttf`'s `cmap` and `post`
+tables, or run `ttx -t post` if `fonttools` is available. Every other icon in
+this repo has been checked against those names.
+
 If an icon renders as a blank or a tofu box, check whether the glyph is actually
 reaching the screen before blaming the font — `capture-pane` shows what tmux
 drew:
