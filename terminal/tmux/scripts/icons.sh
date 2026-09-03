@@ -35,7 +35,10 @@ tmux set -g @ico_ssh $'\U000f0318'      # md-lan-connect
 tmux set -g @ico_folder $'\U000f024b'   # md-folder
 tmux set -g @ico_java $'\U000f0176'     # md-coffee
 tmux set -g @ico_shell $'\U000f018d'    # md-console
-tmux set -g @ico_claude $'\U000f06a9'   # md-robot
+# Not a robot: md-robot is an android head, and the sparkle is what reads as
+# "AI" now -- md-shimmer keeps that in the same Material family as the rest of
+# the bar, and its filled mark survives the mauve badge better than an outline.
+tmux set -g @ico_claude $'\U000f1545'   # md-shimmer
 tmux set -g @ico_default $'\U000f0349'  # md-magnify
 
 # Claude Code state, appended to a window chip by @claude_dot and listed in the
