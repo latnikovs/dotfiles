@@ -260,13 +260,19 @@ rather than at the next 5s tick.
 The dot is gated on the pane also *looking* like Claude, so a state left behind
 by a crash disappears as soon as the pane runs something else.
 
+Both the chip and the pill count *panes*, not windows. `@claude_state` is a pane
+option, and a window format resolves pane options against the window's active
+pane — so before `#{P:...}` was added, splitting a shell next to an agent and
+focusing the shell made that agent vanish from the bar entirely. A window
+running two agents now gets two dots.
+
 The same state feeds the **agents pill** in `status-left`, which answers the
 question the dot cannot: what are the agents in the tabs you are *not* looking
 at doing? Every kitty tab is its own client on its own session, but they all
 share one tmux server, so `#{S:...}` / `#{W:...}` — tmux's session and window
-loops — let one status line walk the whole server and name each session that
-holds agents, followed by one dot per agent in it: `󰚩 wms ◉ ●  ui ◉`. Still a
-plain format, so still no job and no polling. Each client drops its own session from the list via
+loops, with `#{P:...}` for panes inside them — let one status line walk the whole
+server and name each session that holds agents, followed by one dot per agent in
+it: `󱕅 wms 󰋗 󰄳  ui 󰋗`. Still a plain format, so still no job and no polling. Each client drops its own session from the list via
 `#{client_session}`, since that agent is already on the window chip beside it.
 
 Two things follow from how tmux parses formats, and both cost an evening if
