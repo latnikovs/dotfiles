@@ -240,9 +240,13 @@ answers "which agent needs me?" without cycling through windows:
 
 | Dot | Meaning |
 | --- | --- |
-| `○` peach | a turn is running |
-| `◉` red | Claude is waiting on you (permission prompt, idle nag) |
-| `●` green | the turn finished |
+| 󰦖 peach | a turn is running |
+| 󰋗 red | Claude is asking you something |
+| 󰄳 green | the turn finished, or it is simply idle |
+
+Those three are one MDI circle with different interiors, so the state reads
+without leaning on the colour — which matters on the active window chip, where
+the mauve badge leaves the accents little contrast to work with.
 
 `scripts/claude-state.sh` is the whole mechanism. Claude Code's hooks call it on
 every relevant event and it writes the state as a *pane* option
@@ -278,10 +282,17 @@ holds machine-local permissions and plugin state). Wire them up per machine:
 ```jsonc
 // one entry per event, matcher "*", alongside anything already there
 "UserPromptSubmit" | "PreToolUse" | "PostToolUse" → claude-state.sh busy
-"Notification"                                    → claude-state.sh wait
+"Notification"                                    → claude-state.sh notify
 "Stop" | "SessionStart"                           → claude-state.sh idle
 "SessionEnd"                                      → claude-state.sh clear
 ```
+
+`notify` rather than a fixed state, because `Notification` covers two unrelated
+things: Claude asking for something, and the nag that fires once a prompt has
+sat unanswered for a minute. Mapping both to "asking" meant a finished session
+turned from done to asking a minute later on its own, which made the one state
+worth getting up for mean nothing. The script reads the event's `message`: the
+nag says it is waiting for input, and anything else counts as a question.
 
 with each command spelled `bash ~/.tmux/scripts/claude-state.sh <state>`.
 
