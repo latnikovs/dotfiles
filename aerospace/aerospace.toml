@@ -111,7 +111,7 @@ alt-b = ['workspace B', 'exec-and-forget open -b com.microsoft.edgemac || open -
 alt-c = ['workspace C', 'exec-and-forget open -b com.google.Chrome'] # chrome
 alt-d = ['workspace D', 'exec-and-forget open -b com.jetbrains.datagrip'] # datagrip
 alt-e = ['workspace E', 'exec-and-forget open -b com.apple.finder'] # finder
-alt-g = ['workspace G', 'exec-and-forget open -b com.openai.chat'] # chatgpt
+alt-g = ['workspace G', 'exec-and-forget open -b com.openai.codex'] # chatgpt
 alt-i = ['workspace I', 'exec-and-forget open -b com.jetbrains.intellij || open -b com.jetbrains.intellij.ce'] # intellij: ultimate, else ce
 alt-o = ['workspace O', 'exec-and-forget open -b org.keepassxc.keepassxc'] # keepassxc
 alt-p = ['workspace P', 'exec-and-forget open -b com.postmanlabs.mac'] # postman
@@ -228,7 +228,7 @@ if.app-id = 'com.microsoft.teams2'
 run = "move-node-to-workspace Y"
 
 [[on-window-detected]]
-if.app-id = 'com.openai.chat'
+if.app-id = 'com.openai.codex'
 run = "move-node-to-workspace G"
 
 [[on-window-detected]]
