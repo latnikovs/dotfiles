@@ -196,6 +196,7 @@ a work tree, the battery pill on a machine with no battery.
 | `theme-watch.sh` | reloads the config when that appearance changes |
 | `icons.sh` | publishes the glyphs to tmux as `@cap_*` / `@ico_*` options |
 | `claude-state.sh` | Claude Code's turn state, as a pane option the window chips read |
+| `goto-agent.sh` | switches to the agent or session whose dot was clicked |
 | `lib.sh` | the `pill` helper and the glyph constants |
 
 tmux parses `#[...]` style sequences out of a `#()` job's output but does not
@@ -274,6 +275,24 @@ loops, with `#{P:...}` for panes inside them — let one status line walk the wh
 server and name each session that holds agents, followed by one dot per agent in
 it: `󱕅 wms 󰋗 󰄳  ui 󰋗`. Still a plain format, so still no job and no polling. Each client drops its own session from the list via
 `#{client_session}`, since that agent is already on the window chip beside it.
+
+Every dot is clickable, in the pill and on the window chips alike: clicking one
+goes to that agent's pane, and clicking a session name in the pill goes to that
+session. Each glyph is drawn inside a `#[range=user|<pane id>]` and each name
+inside a `#[range=user|<session id>]`, tmux reports whichever range the pointer
+was over as `#{mouse_status_range}`, and `MouseDown1Status` hands it to
+`scripts/goto-agent.sh`. A user range triggers the `Status` mouse key wherever
+it is drawn, pill included, so `StatusLeft` and `StatusRight` keep their own
+bindings and a plain window chip still falls through to `select-window`.
+
+tmux can do this natively with `range=pane` and `switch-client -t=`, and it does
+not work here: the mouse target is resolved against the *clicking client's*
+session, so a pane in any other session never resolves — and other sessions are
+the entire point of the pill. Hence the ids and the script. Two smaller edges: a
+range name is capped at 15 bytes, which `%12` and `$3` clear and a long session
+name would not; and the dot on a window chip closes with
+`#[range=window|#{window_index}]` rather than `#[norange]`, because ending the
+chip's own range mid-chip would leave its trailing pad clicking on nothing.
 
 Two things follow from how tmux parses formats, and both cost an evening if
 rediscovered the hard way. Styles inside a conditional must be
