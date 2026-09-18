@@ -301,6 +301,12 @@ link_dotfile() {
 
 link_dotfile "$ROOT_DIR/editors/intellij/ideavimrc" "$HOME/.ideavimrc" "ideavimrc"
 link_dotfile "$ROOT_DIR/editors/nvim" "$HOME/.config/nvim" "nvim"
+# markdownlint-cli2 only reads a config file from the linting process's working
+# directory and never walks upward, and nvim-lint pipes the buffer to it over
+# stdin, so there is no file path to discover one from. Neovim passes this path
+# explicitly (editors/nvim/lua/plugins/markdown.lua); the symlink also makes it
+# the default for markdownlint-cli2 runs started from $HOME.
+link_dotfile "$ROOT_DIR/editors/nvim/markdownlint/.markdownlint-cli2.yaml" "$HOME/.markdownlint-cli2.yaml" "markdownlint config"
 # The shared zshrc sources ~/.zshrc.local at the end for per-machine tweaks
 # (work paths, secrets, tool-managed blocks). That file is intentionally not
 # tracked here and is left untouched on machines that already have one.
