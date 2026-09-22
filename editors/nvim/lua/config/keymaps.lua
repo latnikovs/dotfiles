@@ -14,3 +14,19 @@ end, { desc = "[Y]ank full [P]ath:line" })
 -- Buffer shortcuts carried over from the kickstart config.
 vim.keymap.set("n", "<leader>bn", "<cmd>enew<cr>", { desc = "[B]uffer [N]ew" })
 vim.keymap.set("n", "<leader>bR", "<cmd>e!<cr>", { desc = "[B]uffer [R]eload" })
+
+-- Buffer-local counterpart to LazyVim's <leader>ud, which hides diagnostics in
+-- every buffer. Meant for reading prose (markdownlint nagging about a README)
+-- without also losing LSP errors in the code buffers alongside it. Linters
+-- keep running; their results are just not shown for this buffer.
+Snacks.toggle
+  .new({
+    name = "Diagnostics (Buffer)",
+    get = function()
+      return vim.diagnostic.is_enabled({ bufnr = 0 })
+    end,
+    set = function(state)
+      vim.diagnostic.enable(state, { bufnr = 0 })
+    end,
+  })
+  :map("<leader>ue")
