@@ -196,6 +196,7 @@ a work tree, the battery pill on a machine with no battery.
 | `theme-watch.sh` | reloads the config when that appearance changes |
 | `icons.sh` | publishes the glyphs to tmux as `@cap_*` / `@ico_*` options |
 | `claude-state.sh` | Claude Code's turn state, as a pane option the window chips read |
+| `claude-spin.sh` | animates the busy glyph while any Claude is mid-turn |
 | `goto-agent.sh` | switches to the agent or session whose dot was clicked |
 | `lib.sh` | the `pill` helper and the glyph constants |
 
@@ -241,13 +242,17 @@ answers "which agent needs me?" without cycling through windows:
 
 | Dot | Meaning |
 | --- | --- |
-| 󰦖 peach | a turn is running |
+| 󰪞󰪠󰪢󰪤 peach, spinning | a turn is running |
 | 󰋗 red | Claude is asking you something |
 | 󰄳 green | the turn finished, or it is simply idle |
 
 Those three are one MDI circle with different interiors, so the state reads
 without leaning on the colour — which matters on the active window chip, where
-the mauve badge leaves the accents little contrast to work with.
+the mauve badge leaves the accents little contrast to work with. The busy one is
+a pie filling clockwise (`md-circle_slice_1..8`), which keeps the same
+silhouette as the other two while adding the one thing a static glyph cannot
+say: liveness. Colour and shape already tell you a turn is running; only motion
+separates still working from wedged.
 
 `scripts/claude-state.sh` is the whole mechanism. Claude Code's hooks call it on
 every relevant event and it writes the state as a *pane* option
@@ -260,6 +265,20 @@ rather than at the next 5s tick.
 
 The dot is gated on the pane also *looking* like Claude, so a state left behind
 by a crash disappears as soon as the pane runs something else.
+
+The animation is the one part that is not free, because it needs a clock and the
+format language has none — every time-valued variable (`client_activity`,
+`session_activity`, `window_activity`) is an *event* timestamp rather than now,
+and a status redraw does not touch them. So `scripts/claude-spin.sh` pushes the
+frame in from outside: started by `claude-state.sh` on the `busy` transition, it
+publishes the current glyph in `@claude_spin` every 150ms and exits by itself
+once no pane is busy, leaving nothing running for the vastly longer stretches
+when you are not waiting on a turn. It is a singleton per tmux server
+(`@claude_spin_pid`), it makes at most two tmux calls per frame — the pane and
+client query is batched and only re-run every fourth one — and the busy scan
+reuses the same crash guard as the dot, since a stale `busy` here would mean a
+ticker that never stops rather than merely a dot that never shows. When it is
+not running, the busy branch falls back to the static `@ico_claude_busy`.
 
 Both the chip and the pill count *panes*, not windows. `@claude_state` is a pane
 option, and a window format resolves pane options against the window's active
