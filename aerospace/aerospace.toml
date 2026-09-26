@@ -17,6 +17,16 @@ after-startup-command = []
 # Start AeroSpace at login
 start-at-login = true
 
+# See: https://nikitabobko.github.io/AeroSpace/guide#config-version
+config-version = 2
+
+# Workspaces that exist even when empty. Mirrors the alt-<key> workspace bindings,
+# which is what config-version 1 used to infer implicitly.
+persistent-workspaces = [
+  '1', '2', '3',
+  'A', 'B', 'C', 'D', 'E', 'G', 'I', 'M', 'N', 'O', 'P', 'S', 'T', 'U', 'Y',
+]
+
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
