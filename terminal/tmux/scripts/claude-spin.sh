@@ -71,41 +71,29 @@ trap cleanup EXIT INT TERM
 
 i=0
 tick=0
-clients=()
 while :; do
 	if [ $((tick % RECHECK)) -eq 0 ]; then
-		# Pane states and the client list in one tmux invocation: the loop's
-		# whole cost is the forks, so it makes as few as it can.
-		#
 		# The semver-argv0 match is the same crash guard @claude_live uses in
 		# tmux.conf, and it matters more here than there. A busy left behind by
 		# a Claude that died before its SessionEnd ran is merely invisible on
 		# the chip; here it would be a pane that never stops being busy, and a
 		# ticker that never stops ticking.
-		out="$(tmux \
-			list-panes -a -F 'P:#{?#{&&:#{m:[0-9]*.[0-9]*.[0-9]*,#{pane_current_command}},#{==:#{@claude_state},busy}},busy,}' \; \
-			list-clients -F 'C:#{client_name}' 2>/dev/null)" || cleanup
+		out="$(tmux list-panes -a -F \
+			'#{?#{&&:#{m:[0-9]*.[0-9]*.[0-9]*,#{pane_current_command}},#{==:#{@claude_state},busy}},busy,}' \
+			2>/dev/null)" || cleanup
 
 		case $'\n'"$out" in
-		*$'\nP:busy'*) ;;
+		*$'\nbusy'*) ;;
 		*) cleanup ;;
 		esac
-
-		clients=()
-		while IFS= read -r line; do
-			case "$line" in
-			C:?*) clients+=("${line#C:}") ;;
-			esac
-		done <<<"$out"
 	fi
 
-	# The frame and every client's repaint in one invocation, for the same
-	# reason. refresh-client -S redraws the status line only.
-	cmd=(set -g @claude_spin "${frames[i]}")
-	for c in "${clients[@]}"; do
-		cmd+=(';' refresh-client -S -t "$c")
-	done
-	tmux "${cmd[@]}" 2>/dev/null || cleanup
+	# Setting the option is the whole repaint: set-option redraws every
+	# client by itself. No refresh-client, with or without -S. Both make tmux
+	# kill any #() job still running and start it over, and status.sh takes
+	# ~200ms, longer than a frame -- so while a turn ran it never finished and
+	# the right side of the bar went blank.
+	tmux set -g @claude_spin "${frames[i]}" 2>/dev/null || cleanup
 
 	i=$(((i + 1) % ${#frames[@]}))
 	tick=$((tick + 1))
