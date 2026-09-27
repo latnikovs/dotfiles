@@ -25,6 +25,9 @@ branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null)" ||
 	exit 0
 
 staged=0 modified=0 untracked=0 conflicted=0
+# --no-optional-locks: a plain 'git status' refreshes the index and takes
+# .git/index.lock to write it back. Running every status-interval, it would
+# grab that lock mid-commit and make the commit fail.
 while IFS= read -r line; do
 	case "${line:0:2}" in
 		'??') untracked=$((untracked + 1)); continue ;;
@@ -33,7 +36,7 @@ while IFS= read -r line; do
 	esac
 	[ "${line:0:1}" != ' ' ] && staged=$((staged + 1))
 	[ "${line:1:1}" != ' ' ] && modified=$((modified + 1))
-done < <(git status --porcelain 2>/dev/null)
+done < <(git --no-optional-locks status --porcelain 2>/dev/null)
 
 ahead=0 behind=0
 if upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)"; then
